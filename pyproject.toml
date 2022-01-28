@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "new_albums"
+version = "0.1.0"
+description = ""
+authors = ["Rivers Cuomo <riverscuomo@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+spotipy = "^2.19.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,3 +1,7 @@
+A python script to update a Spotify playlist every day with all the songs from any significant new albums. It shouldn't include single-only releases. Anything older than a month should be deleted.  
+
+This project is for me to experiment with open-source collaboration. So please feel free to participate.
+
 FIRST SET UP ENVIRONMENT VARIABLES ON YOUR COMPUTER
 https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
 
@@ -7,7 +11,6 @@ set SPOTIFY_CLIENT_ID=xxx&&set SPOTIFY_CLIENT_SECRET=xxx&&set SPOTIFY_REDIRECT_U
 
 To view current environment variables: 
 set
-
 
 I made this package  with the manager Poetry 
 https://python-poetry.org/docs/

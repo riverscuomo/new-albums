@@ -1,17 +1,9 @@
-import sys
-
 import random
-import os
 
+import config
 from services.get_spotify import get_spotify
 
-global spotify
-global PLAYLIST_ID
-global SPOTIFY_USER
 spotify = get_spotify()
-PLAYLIST_ID = os.environ["PLAYLIST_ID"]
-SPOTIFY_USER = os.environ["SPOTIFY_USER"]
-
 
 def get_spotify_songs_from_playlist(
     playlistId, desired_quantity, skip_recents=None, name=""
@@ -30,7 +22,7 @@ def get_spotify_songs_from_playlist(
     # print(spotify)
 
     # get the results for every song in the playlist
-    results = spotify.user_playlist_tracks(SPOTIFY_USER, playlist["id"])
+    results = spotify.user_playlist_tracks(config.SPOTIFY_USER, playlist["id"])
     # print(results)
     tracks = results["items"]
     while results["next"]:
@@ -94,7 +86,7 @@ def main():
     random.shuffle(track_ids)
 
     print("updating spotify playlist")
-    result = spotify.user_playlist_replace_tracks(SPOTIFY_USER, PLAYLIST_ID, track_ids)
+    result = spotify.user_playlist_replace_tracks(config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids)
     # print(result)
 
     # # change the playlist description to a random fact

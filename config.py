@@ -1,18 +1,25 @@
 import os
 from datetime import datetime
 
-# in spotify result
+from decouple import config as dconfig
+
+# Config settings from environment variables. 
+# These are treated as secrets and therefore sourced from environment variables to follow best practices.
+PLAYLIST_ID = dconfig("PLAYLIST_ID")
+SPOTIFY_CLIENT_ID = dconfig("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = dconfig("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_REDIRECT_URI = dconfig("SPOTIFY_REDIRECT_URI")
+SPOTIFY_USER = dconfig("SPOTIFY_USER")
+
+
+# The rest are also config settings, but their literal values are commited to the codebase since they aren't secret.
+
+# how spotify formats dates in it's API.
 spotify_date_format = "%Y-%m-%dT%H:%M:%S"
-
-spotify_scope_warning = "signing into spotify...\nIf this program or another program with the same client_id\nhas changed scopes, you'll need to reauthorize each time.\nMake sure all programs have the same scope."
-user = os.environ["SPOTIFY_USER"]
-scope = "playlist-modify-private, playlist-modify-public, user-library-read, playlist-read-private, user-library-modify, user-read-recently-played"
-clientId = os.environ["SPOTIFY_CLIENT_ID"]
-secret = os.environ["SPOTIFY_CLIENT_SECRET"]
-
 # the way I want to see it
 date_format = "%Y-%m-%d %A, %I:%M %p"
-
+spotify_scope_warning = "signing into spotify...\nIf this program or another program with the same client_id\nhas changed scopes, you'll need to reauthorize each time.\nMake sure all programs have the same scope."
+scope = "playlist-modify-private, playlist-modify-public, user-library-read, playlist-read-private, user-library-modify, user-read-recently-played"
 now_utc = datetime.now()
 now_local = now_utc.astimezone()
 local_offset_str = datetime.strftime(now_local, "%z")

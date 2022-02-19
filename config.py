@@ -1,7 +1,5 @@
-from datetime import datetime
-from dateutil.tz.tz import tzlocal
 import os
-
+from datetime import datetime
 
 # in spotify result
 spotify_date_format = "%Y-%m-%dT%H:%M:%S"
@@ -16,7 +14,7 @@ secret = os.environ["SPOTIFY_CLIENT_SECRET"]
 date_format = "%Y-%m-%d %A, %I:%M %p"
 
 now_utc = datetime.now()
-now_local = datetime.now(tzlocal())
+now_local = now_utc.astimezone()
 local_offset_str = datetime.strftime(now_local, "%z")
 local_offset_int = float(
     local_offset_str[:3] + (".5" if local_offset_str[3] == "3" else ".0")

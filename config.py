@@ -3,7 +3,7 @@ from datetime import datetime
 
 from decouple import config as dconfig
 
-# Config settings from environment variables. 
+# Config settings from environment variables.
 # These are treated as secrets and therefore sourced from environment variables to follow best practices.
 PLAYLIST_ID = dconfig("PLAYLIST_ID")
 SPOTIFY_CLIENT_ID = dconfig("SPOTIFY_CLIENT_ID")

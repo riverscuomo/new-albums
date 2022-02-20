@@ -2,8 +2,19 @@ import random
 
 import config
 from services.get_spotify import get_spotify
+from rich import print
 
 spotify = get_spotify()
+bad_fields = [
+    "available_markets",
+    "external_urls",
+    "href",
+    "images",
+    "album_type",
+    "release_date_precision",
+    "uri",
+    "type",
+]
 
 
 def get_spotify_songs_from_playlist(
@@ -65,34 +76,62 @@ def get_spotify_songs_from_playlist(
     return track_ids
 
 
-def get_track_ids():
+def get_new_album_ids(limit=50):
     """
-    TO DO:
-    Get all the track ids from any significant new albums. It shouldn't include single-only releases.
-
+    Get all the album ids from the last x new albums. It doesn't include single-only releases.
     """
-    new = spotify.new_releases(limit=10)
-    print(new)
+    new = spotify.new_releases(limit=limit, country="US")["albums"]["items"]
 
-    return ["4cOdK2wGLETKBW3PvgPWqT"]
+    new_albums = [x for x in new if x["album_type"] == "album"]
+    # print(new)
+
+    # for x in new_albums:
+    #     for f in bad_fields:
+    #         x.pop(f, None)
+    # print(x)
+
+    return [x["id"] for x in new_albums]
+
+
+def get_track_ids_for_album(album_id):
+    """
+    Get the track ids for a single album.
+    """
+    print(f"getting track ids for album {album_id}")
+    album = spotify.album(album_id)
+
+    # print(track_ids)
+    return [x["id"] for x in album["tracks"]["items"]]
 
 
 def main():
 
     print("new_albums.setup main...")
 
-    track_ids = get_track_ids()
+    new_album_ids = get_new_album_ids()
+    # print(new_album_ids)
+
+    #
+
+    track_ids = []
+
+    for album_id in new_album_ids:
+        print(album_id)
+        track_ids.extend(get_track_ids_for_album(album_id))
+
+        print(track_ids)
 
     # TODO:
-    # Anything older than a month should be deleted.
-
-    random.shuffle(track_ids)
+    # - confirm these are the latest albums returned by spotify
+    # - OR accomodate a request of more than 100 tracks
+    if len(track_ids) > 100:
+        track_ids = track_ids[-100:]
 
     print("updating spotify playlist")
-    # result = spotify.user_playlist_replace_tracks(
-    #     config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids
-    # )
-    # print(result)
+    result = spotify.user_playlist_replace_tracks(
+        config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids
+    )
+    print(result)
 
     # # change the playlist description to a random fact
     # post_description(job)

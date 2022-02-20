@@ -5,6 +5,7 @@ from services.get_spotify import get_spotify
 
 spotify = get_spotify()
 
+
 def get_spotify_songs_from_playlist(
     playlistId, desired_quantity, skip_recents=None, name=""
 ):
@@ -70,6 +71,8 @@ def get_track_ids():
     Get all the track ids from any significant new albums. It shouldn't include single-only releases.
 
     """
+    new = spotify.new_releases(limit=10)
+    print(new)
 
     return ["4cOdK2wGLETKBW3PvgPWqT"]
 
@@ -86,7 +89,9 @@ def main():
     random.shuffle(track_ids)
 
     print("updating spotify playlist")
-    result = spotify.user_playlist_replace_tracks(config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids)
+    # result = spotify.user_playlist_replace_tracks(
+    #     config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids
+    # )
     # print(result)
 
     # # change the playlist description to a random fact

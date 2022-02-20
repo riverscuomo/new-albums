@@ -7,6 +7,7 @@ authors = ["Rivers Cuomo <riverscuomo@users.noreply.github.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 spotipy = "^2.19.0"
+python-decouple = "^3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

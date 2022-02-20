@@ -1,8 +1,9 @@
 import os
+from json.decoder import JSONDecodeError
+
+import config
 import spotipy
 import spotipy.util as util
-from json.decoder import JSONDecodeError
-from config import *
 
 
 def get_spotify():
@@ -12,20 +13,20 @@ def get_spotify():
         # print(clientId)
         # print(secret)
         token = util.prompt_for_user_token(
-            user,
-            redirect_uri="http://localhost:8080",
-            scope=scope,
-            client_id=clientId,
-            client_secret=secret,
+            config.SPOTIFY_USER,
+            redirect_uri=config.SPOTIFY_REDIRECT_URI,
+            scope=config.scope,
+            client_id=config.SPOTIFY_CLIENT_ID,
+            client_secret=config.SPOTIFY_CLIENT_SECRET,
         )
     except (AttributeError, JSONDecodeError):
-        os.remove(f".cache-{user}")
+        os.remove(f".cache-{config.SPOTIFY_USER}")
         token = util.prompt_for_user_token(
-            user,
-            redirect_uri="http://localhost:8080",
-            scope=scope,
-            client_id=clientId,
-            client_secret=secret,
+            config.SPOTIFY_USER,
+            redirect_uri=config.SPOTIFY_REDIRECT_URI,
+            scope=config.scope,
+            client_id=config.SPOTIFY_CLIENT_ID,
+            client_secret=config.SPOTIFY_CLIENT_SECRET,
         )
 
     if token:
@@ -33,5 +34,5 @@ def get_spotify():
         # print(token)
         # print(spotify)
     else:
-        print(spotify_scope_warning)
+        print(config.spotify_scope_warning)
     return spotify

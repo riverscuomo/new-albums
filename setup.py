@@ -15,6 +15,15 @@ bad_fields = [
     "uri",
     "type",
 ]
+bad_genres = [
+    "latin",
+    "latin pop",
+    "pop venezolano",
+    "reggaeton",
+    "trap latino",
+    "pluggnb",
+    "progressive house",
+]
 
 
 def get_spotify_songs_from_playlist(
@@ -82,22 +91,53 @@ def get_new_album_ids(limit=50):
     """
     new = spotify.new_releases(limit=limit, country="US")["albums"]["items"]
 
+    new.sort(key=lambda x: x["release_date"], reverse=True)
+
     new_albums = [x for x in new if x["album_type"] == "album"]
     # print(new)
 
-    # for x in new_albums:
-    #     for f in bad_fields:
-    #         x.pop(f, None)
-    # print(x)
+    for x in new_albums:
+        for f in bad_fields:
+            x.pop(f, None)
+        # print(x)
+
+    new_albums = remove_bad_genres(new_albums)
 
     return [x["id"] for x in new_albums]
+
+
+def remove_bad_genres(new_albums):
+    """
+    remove any albums whose first artist's first genre is in bad_genres
+    """
+    albums = []
+    for album in new_albums:
+        main_artist = album["artists"][0]
+        artist_name = main_artist["name"]
+        # print(artist_name)
+        main_artist = spotify.artist(main_artist["id"])
+
+        genres = main_artist["genres"]
+        # print(artist_name, genres)
+
+        try:
+            main_genre = genres[0]
+        except:
+            print(f"{artist_name} has no genres")
+
+        if main_genre in bad_genres:
+            print(f"{artist_name} has a bad genre: {main_genre}")
+            continue
+        print(f"{artist_name} has no bad genres: {genres}")
+        albums.append(album)
+    return albums
 
 
 def get_track_ids_for_album(album_id):
     """
     Get the track ids for a single album.
     """
-    print(f"getting track ids for album {album_id}")
+    # print(f"getting track ids for album {album_id}")
     album = spotify.album(album_id)
 
     # print(track_ids)
@@ -110,20 +150,20 @@ def main():
 
     new_album_ids = get_new_album_ids()
     # print(new_album_ids)
+    # exit()
 
     #
 
     track_ids = []
 
     for album_id in new_album_ids:
-        print(album_id)
+        # print(album_id)
         track_ids.extend(get_track_ids_for_album(album_id))
 
-        print(track_ids)
+        # print(track_ids)
 
     # TODO:
-    # - confirm these are the latest albums returned by spotify
-    # - OR accomodate a request of more than 100 tracks
+    # accomodate a request of more than 100 tracks
     if len(track_ids) > 100:
         track_ids = track_ids[-100:]
 

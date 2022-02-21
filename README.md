@@ -30,10 +30,6 @@ set SPOTIFY_CLIENT_ID=xxx && set SPOTIFY_CLIENT_SECRET=xxx && set SPOTIFY_REDIRE
 
 To view all currently set environment variables, use the command `set`.
 
-### Poetry
-
-I made this package with the package and dependency manager [Poetry](https://python-poetry.org/docs). Please make sure you [have it installed](https://python-poetry.org/docs/#installation) on your machine before running the New Albums script.
-
 ## Running
 
 Once you have completed all the installtion steps, run `poetry install` to install all the project's dependencies. After that, run New Albums script by running `poetry run python setup.py`.

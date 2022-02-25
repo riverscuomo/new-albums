@@ -23,6 +23,10 @@ bad_genres = [
     "trap latino",
     "pluggnb",
     "progressive house",
+    "trap latino",
+    "rap romantico",
+    "puerto rican pop",
+    "atl hip hop",
 ]
 
 
@@ -87,7 +91,7 @@ def get_spotify_songs_from_playlist(
 
 def get_new_album_ids(limit=50):
     """
-    Get all the album ids from the last x new albums. It doesn't include single-only releases.
+    Get all the album ids from the last x new albums. It doesn't include single-only releases OR any genres you've marked as bad.
     """
     new = spotify.new_releases(limit=limit, country="US")["albums"]["items"]
 
@@ -165,7 +169,7 @@ def main():
     # TODO:
     # accomodate a request of more than 100 tracks
     if len(track_ids) > 100:
-        track_ids = track_ids[-100:]
+        track_ids = track_ids[:100]
 
     print("updating spotify playlist")
     result = spotify.user_playlist_replace_tracks(

@@ -4,8 +4,11 @@ import config
 from services.get_spotify import get_spotify
 from rich import print
 
+import json
+
+
 spotify = get_spotify()
-bad_fields = [
+reject_fields = [
     "available_markets",
     "external_urls",
     "href",
@@ -14,19 +17,6 @@ bad_fields = [
     "release_date_precision",
     "uri",
     "type",
-]
-bad_genres = [
-    "latin",
-    "latin pop",
-    "pop venezolano",
-    "reggaeton",
-    "trap latino",
-    "pluggnb",
-    "progressive house",
-    "trap latino",
-    "rap romantico",
-    "puerto rican pop",
-    "atl hip hop",
 ]
 
 
@@ -91,7 +81,7 @@ def get_spotify_songs_from_playlist(
 
 def get_new_album_ids(limit=50):
     """
-    Get all the album ids from the last x new albums. It doesn't include single-only releases OR any genres you've marked as bad.
+    Get all the album ids from the last x new albums. It doesn't include single-only releases OR any genres you've marked as reject.
     """
     new = spotify.new_releases(limit=limit, country="US")["albums"]["items"]
 
@@ -101,19 +91,22 @@ def get_new_album_ids(limit=50):
     # print(new)
 
     for x in new_albums:
-        for f in bad_fields:
+        for f in reject_fields:
             x.pop(f, None)
         # print(x)
 
-    new_albums = remove_bad_genres(new_albums)
+    new_albums = remove_reject_genres(new_albums)
 
     return [x["id"] for x in new_albums]
 
 
-def remove_bad_genres(new_albums):
+def remove_reject_genres(new_albums):
     """
-    remove any albums whose first artist's first genre is in bad_genres
+    remove any albums whose first artist's first genre is in reject_genres
     """
+    with open("reject_genres.json") as f:
+        reject_genres = json.load(f)
+
     albums = []
     for album in new_albums:
         main_artist = album["artists"][0]
@@ -121,20 +114,33 @@ def remove_bad_genres(new_albums):
         # print(artist_name)
         main_artist = spotify.artist(main_artist["id"])
 
-        genres = main_artist["genres"]
+        artist_genres = main_artist["genres"]
         # print(artist_name, genres)
 
-        try:
-            main_genre = genres[0]
-        except:
-            print(f"{artist_name} has no genres")
-
-        if main_genre in bad_genres:
-            print(f"{artist_name} has a bad genre: {main_genre}")
+        if contains_reject_genre(reject_genres, artist_name, artist_genres):
             continue
-        print(f"{artist_name} has no bad genres: {genres}")
-        albums.append(album)
+        else:
+            albums.append(album)
+
     return albums
+
+
+def contains_reject_genre(reject_genres, artist_name, artist_genres):
+    try:
+        artist_genre = artist_genres[0]
+    except:
+        print(f"{artist_name} has no genres")
+        return False
+
+    for reject_genre in reject_genres:
+        if (
+            reject_genre["genre"] == artist_genre
+            and artist_name not in reject_genre["exceptions"]
+        ):
+            print(f"{artist_name}'s first genre is a reject genre: {artist_genre}")
+            return True
+
+    print(f"{artist_name}'s first genre is not a reject genres: {artist_genres}")
 
 
 def get_track_ids_for_album(album_id):

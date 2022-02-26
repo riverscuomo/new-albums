@@ -32,4 +32,4 @@ To view all currently set environment variables, use the command `set`.
 
 ## Running
 
-Once you have completed all the installtion steps, run `poetry install` to install all the project's dependencies. After that, run New Albums script by running `poetry run python setup.py`.
+Once you have completed all the installtion steps, run New Albums script by running `py setup.py`.

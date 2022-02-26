@@ -1,0 +1,46 @@
+[
+    {
+        "genre": "latin",
+        "exceptions": []
+    },
+    {
+        "genre": "latin pop",
+        "exceptions": []
+    },
+    {
+        "genre": "pop venezolano",
+        "exceptions": []
+    },
+    {
+        "genre": "reggaeton",
+        "exceptions": []
+    },
+    {
+        "genre": "trap latino",
+        "exceptions": []
+    },
+    {
+        "genre": "pluggnb",
+        "exceptions": []
+    },
+    {
+        "genre": "progressive house",
+        "exceptions": []
+    },
+    {
+        "genre": "trap latino",
+        "exceptions": []
+    },
+    {
+        "genre": "rap romantico",
+        "exceptions": []
+    },
+    {
+        "genre": "puerto rican pop",
+        "exceptions": []
+    },
+    {
+        "genre": "atl hip hop",
+        "exceptions": []
+    }
+]

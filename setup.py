@@ -87,13 +87,14 @@ def get_new_album_ids(limit=50):
 
     new.sort(key=lambda x: x["release_date"], reverse=True)
 
+    # Remove any albums that are single-only
     new_albums = [x for x in new if x["album_type"] == "album"]
     # print(new)
 
+    # Remove any fields that we don't for the rest of the script
     for x in new_albums:
         for f in reject_fields:
             x.pop(f, None)
-        # print(x)
 
     new_albums = remove_reject_genres(new_albums)
 
@@ -111,7 +112,6 @@ def remove_reject_genres(new_albums):
     for album in new_albums:
         main_artist = album["artists"][0]
         artist_name = main_artist["name"]
-        # print(artist_name)
         main_artist = spotify.artist(main_artist["id"])
 
         artist_genres = main_artist["genres"]
@@ -134,7 +134,7 @@ def contains_reject_genre(reject_genres, artist_name, artist_genres):
 
     for reject_genre in reject_genres:
         if (
-            reject_genre["genre"] == artist_genre
+            reject_genre["genre"] in artist_genre
             and artist_name not in reject_genre["exceptions"]
         ):
             print(f"{artist_name}'s first genre is a reject genre: {artist_genre}")

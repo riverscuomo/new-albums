@@ -1,14 +1,26 @@
 [
     {
+        "genre": "ccm",
+        "exceptions": []
+    },
+    {
+        "genre": "christian",
+        "exceptions": []
+    },
+    {
+        "genre": "corrido",
+        "exceptions": []
+    },
+    {
+        "genre": "funk",
+        "exceptions": []
+    },
+    {
         "genre": "latin",
         "exceptions": []
     },
     {
-        "genre": "latin pop",
-        "exceptions": []
-    },
-    {
-        "genre": "pop venezolano",
+        "genre": "venezolano",
         "exceptions": []
     },
     {
@@ -16,7 +28,13 @@
         "exceptions": []
     },
     {
-        "genre": "trap latino",
+        "genre": "rap",
+        "exceptions": [
+            "Kodak Black"
+        ]
+    },
+    {
+        "genre": "trap",
         "exceptions": []
     },
     {
@@ -28,19 +46,11 @@
         "exceptions": []
     },
     {
-        "genre": "trap latino",
+        "genre": "puerto rican",
         "exceptions": []
     },
     {
-        "genre": "rap romantico",
-        "exceptions": []
-    },
-    {
-        "genre": "puerto rican pop",
-        "exceptions": []
-    },
-    {
-        "genre": "atl hip hop",
+        "genre": "hip hop",
         "exceptions": []
     }
 ]

@@ -129,7 +129,8 @@ def contains_reject_genre(reject_genres, artist_name, artist_genres):
     try:
         artist_genre = artist_genres[0]
     except:
-        print(f"{artist_name} has no genres")
+        # in case the artist has no genres
+        print(f"- [] | {artist_name} ")
         return False
 
     for reject_genre in reject_genres:
@@ -137,10 +138,11 @@ def contains_reject_genre(reject_genres, artist_name, artist_genres):
             reject_genre["genre"] in artist_genre
             and artist_name not in reject_genre["exceptions"]
         ):
-            print(f"{artist_name}'s first genre is a reject genre: {artist_genre}")
+            rejected_genre = reject_genre["genre"]
+            print(f"- {rejected_genre} | {artist_name}")
             return True
 
-    print(f"{artist_name}'s first genre is not a reject genres: {artist_genres}")
+    print(f"+ {artist_genres[0]} | {artist_name}")
 
 
 def get_track_ids_for_album(album_id):
@@ -176,7 +178,7 @@ def main():
 
     # split track_ids into lists of size 100
     for i in range(0, len(track_ids), 100):
-        track_id_lists.append(track_ids[i:i+100])
+        track_id_lists.append(track_ids[i : i + 100])
 
     print("updating spotify playlist")
     # empty playlist first
@@ -188,7 +190,7 @@ def main():
         result = spotify.user_playlist_add_tracks(
             config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
         )
-    print(result)
+    # print(result)
 
     # # change the playlist description to a random fact
     # post_description(job)

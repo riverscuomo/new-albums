@@ -10,8 +10,6 @@ def get_spotify():
     print("get_spotify...")
 
     try:
-        # print(clientId)
-        # print(secret)
         token = util.prompt_for_user_token(
             config.SPOTIFY_USER,
             redirect_uri=config.SPOTIFY_REDIRECT_URI,
@@ -31,8 +29,6 @@ def get_spotify():
 
     if token:
         spotify = spotipy.Spotify(auth=token)
-        # print(token)
-        # print(spotify)
     else:
         print(config.spotify_scope_warning)
     return spotify

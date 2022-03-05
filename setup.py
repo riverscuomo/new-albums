@@ -172,15 +172,22 @@ def main():
 
         # print(track_ids)
 
-    # TODO:
-    # accomodate a request of more than 100 tracks
-    if len(track_ids) > 100:
-        track_ids = track_ids[:100]
+    track_id_lists = []
+
+    # split track_ids into lists of size 100
+    for i in range(0, len(track_ids), 100):
+        track_id_lists.append(track_ids[i:i+100])
 
     print("updating spotify playlist")
+    # empty playlist first
     result = spotify.user_playlist_replace_tracks(
-        config.SPOTIFY_USER, config.PLAYLIST_ID, track_ids
+        config.SPOTIFY_USER, config.PLAYLIST_ID, []
     )
+    # add all of the sublists of track_id_lists
+    for sublist in track_id_lists:
+        result = spotify.user_playlist_add_tracks(
+            config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
+        )
     print(result)
 
     # # change the playlist description to a random fact

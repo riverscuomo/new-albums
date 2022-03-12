@@ -96,17 +96,17 @@ def get_new_album_ids(limit=50):
         for f in reject_fields:
             x.pop(f, None)
 
-    new_albums = remove_reject_genres(new_albums)
+    new_albums = remove_rejects(new_albums)
 
     return [x["id"] for x in new_albums]
 
 
-def remove_reject_genres(new_albums):
+def remove_rejects(new_albums):
     """
-    remove any albums whose first artist's first genre is in reject_genres
+    remove any albums whose first artist's first genre is in rejects
     """
-    with open("reject_genres.json") as f:
-        reject_genres = json.load(f)
+    with open("data/rejects.json") as f:
+        rejects = json.load(f)
 
     albums = []
     for album in new_albums:
@@ -117,7 +117,7 @@ def remove_reject_genres(new_albums):
         artist_genres = main_artist["genres"]
         # print(artist_name, genres)
 
-        if contains_reject_genre(reject_genres, artist_name, artist_genres):
+        if contains_reject_genre(rejects, artist_name, artist_genres):
             continue
         else:
             albums.append(album)
@@ -125,15 +125,15 @@ def remove_reject_genres(new_albums):
     return albums
 
 
-def contains_reject_genre(reject_genres, artist_name, artist_genres):
+def contains_reject_genre(rejects, artist_name, artist_genres):
     try:
         artist_genre = artist_genres[0]
     except:
         # in case the artist has no genres
         print(f"- [] | {artist_name} ")
-        return False
+        return True
 
-    for reject_genre in reject_genres:
+    for reject_genre in rejects:
         if (
             reject_genre["genre"] in artist_genre
             and artist_name not in reject_genre["exceptions"]

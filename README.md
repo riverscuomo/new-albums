@@ -30,6 +30,9 @@ set SPOTIFY_CLIENT_ID=xxx && set SPOTIFY_CLIENT_SECRET=xxx && set SPOTIFY_REDIRE
 
 To view all currently set environment variables, use the command `set`.
 
+### Environment Variables
+Create your own rejects.json file inside of the data folder. This is what the script will use to determine which genres to reject from your playlist. You can use the rejects_example as a template.
+
 ## Running
 
 Once you have completed all the installtion steps, run New Albums script by running `py setup.py`.

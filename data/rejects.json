@@ -1,6 +1,18 @@
 [
     {
+        "genre": "alternative country",
+        "exceptions": []
+    },
+    {
+        "genre": "alternative r&b",
+        "exceptions": []
+    },
+    {
         "genre": "ccm",
+        "exceptions": []
+    },
+    {
+        "genre": "chicago drill",
         "exceptions": []
     },
     {

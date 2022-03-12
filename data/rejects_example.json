@@ -1,0 +1,21 @@
+[
+    {
+        "genre": "rap",
+        "exceptions": [
+            "Kodak Black"
+        ]
+    },
+    {
+        "genre": "trap",
+        "exceptions": []
+    },
+    {
+        "genre": "pluggnb",
+        "exceptions": []
+    },
+    {
+        "genre": "progressive house",
+        "exceptions": []
+    },
+    
+]

@@ -1,6 +1,7 @@
 import random
 
 import config
+from data.rejects import rejects, exceptions
 from services.get_spotify import get_spotify
 from rich import print
 
@@ -105,8 +106,6 @@ def remove_rejects(new_albums):
     """
     remove any albums whose first artist's first genre is in rejects
     """
-    with open("data/rejects.json") as f:
-        rejects = json.load(f)
 
     albums = []
     for album in new_albums:
@@ -133,16 +132,12 @@ def contains_reject_genre(rejects, artist_name, artist_genres):
         print(f"- [] | {artist_name} ")
         return True
 
-    for reject_genre in rejects:
-        if (
-            reject_genre["genre"] in artist_genre
-            and artist_name not in reject_genre["exceptions"]
-        ):
-            rejected_genre = reject_genre["genre"]
-            print(f"- {rejected_genre} | {artist_name}")
+    for r in rejects:
+        if r in artist_genre and artist_name not in exceptions:
+            print(f"- {artist_genre} | {artist_name}")
             return True
 
-    print(f"+ {artist_genres[0]} | {artist_name}")
+    print(f"+ {artist_genre} | {artist_name}")
 
 
 def get_track_ids_for_album(album_id):
@@ -180,7 +175,7 @@ def main():
     for i in range(0, len(track_ids), 100):
         track_id_lists.append(track_ids[i : i + 100])
 
-    print("updating spotify playlist")
+    print(f"updating spotify playlist for {config.SPOTIFY_USER}")
     # empty playlist first
     result = spotify.user_playlist_replace_tracks(
         config.SPOTIFY_USER, config.PLAYLIST_ID, []

@@ -1,7 +1,6 @@
 import random
 
 import config
-from data.rejects import rejects, exceptions
 from services.get_spotify import get_spotify
 from rich import print
 
@@ -85,111 +84,95 @@ def get_new_album_ids(limit=50):
     Get all the album ids from the last x new albums. It doesn't include single-only releases OR any genres you've marked as reject.
     """
     new = spotify.new_releases(limit=limit, country="US")["albums"]["items"]
-
     new.sort(key=lambda x: x["release_date"], reverse=True)
-
+   
     # Remove any albums that are single-only
     new_albums = [x for x in new if x["album_type"] == "album"]
-    # print(new)
-
+   
     # Remove any fields that we don't for the rest of the script
     for x in new_albums:
         for f in reject_fields:
             x.pop(f, None)
 
-    new_albums = remove_rejects(new_albums)
-
+    new_albums = remove_reject_genres(new_albums)
+    #print(new_albums)
     return [x["id"] for x in new_albums]
 
 
-def remove_rejects(new_albums):
+def remove_reject_genres(new_albums):
     """
-    remove any albums whose first artist's first genre is in rejects
+    remove any albums whose first artist's first genre is in reject_genres
     """
-
+    print('remove rejected genres from Json...')
+    with open("reject_genres.json") as f:
+        reject_genres = json.load(f)
     albums = []
+    print_rejected = []
+    print_update = []
+    
     for album in new_albums:
         main_artist = album["artists"][0]
         artist_name = main_artist["name"]
         main_artist = spotify.artist(main_artist["id"])
-
-        artist_genres = main_artist["genres"]
-        # print(artist_name, genres)
-
-        if contains_reject_genre(rejects, artist_name, artist_genres):
-            continue
+        if( main_artist["genres"] == []):
+            artist_genres="unknow"  
         else:
-            albums.append(album)
+            artist_genres = main_artist["genres"]
 
+        if contains_reject_genre(reject_genres, artist_name, artist_genres):
+         print_rejected.append(f"- {artist_genres[0]} | {artist_name}")
+         continue
+        else:
+         print_update.append(f"- {artist_genres[0]} | {artist_name}")
+         albums.append(album)
+    print("*** Reject albums ***") 
+    print(*print_rejected, sep="\n") 
+    print("*** Saved in playlist ***")    
+    print(*print_update, sep="\n") 
     return albums
 
 
-def contains_reject_genre(rejects, artist_name, artist_genres):
+def contains_reject_genre(reject_genres, artist_name, artist_genres):
     try:
         artist_genre = artist_genres[0]
     except:
         # in case the artist has no genres
-        print(f"- [] | {artist_name} ")
-        return True
+        #print(f"- [] | {artist_name} ")
+        return False
 
-    for r in rejects:
-        if r in artist_genre and artist_name not in exceptions:
-            print(f"- {artist_genre} | {artist_name}")
+    for reject_genre in reject_genres:
+        if (
+            reject_genre["genre"] in artist_genre
+            and artist_name not in reject_genre["exceptions"]
+        ):
+            rejected_genre = reject_genre["genre"]
+            #print(f"- {rejected_genre} | {artist_name}")
             return True
-
-    print(f"+ {artist_genre} | {artist_name}")
-
+    #print(f"+ {artist_genres[0]} | {artist_name}")
 
 def get_track_ids_for_album(album_id):
-    """
-    Get the track ids for a single album.
-    """
-    # print(f"getting track ids for album {album_id}")
     album = spotify.album(album_id)
-
-    # print(track_ids)
     return [x["id"] for x in album["tracks"]["items"]]
 
-
-def main():
-
-    print("new_albums.setup main...")
-
-    new_album_ids = get_new_album_ids()
-    # print(new_album_ids)
-    # exit()
-
-    #
-
-    track_ids = []
-
-    for album_id in new_album_ids:
-        # print(album_id)
-        track_ids.extend(get_track_ids_for_album(album_id))
-
-        # print(track_ids)
-
-    track_id_lists = []
-
-    # split track_ids into lists of size 100
-    for i in range(0, len(track_ids), 100):
-        track_id_lists.append(track_ids[i : i + 100])
-
-    print(f"updating spotify playlist for {config.SPOTIFY_USER}")
-    # empty playlist first
+def update_playlist(tracks):
+    print("updating spotify playlist")
     result = spotify.user_playlist_replace_tracks(
         config.SPOTIFY_USER, config.PLAYLIST_ID, []
     )
-    # add all of the sublists of track_id_lists
-    for sublist in track_id_lists:
-        result = spotify.user_playlist_add_tracks(
-            config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
-        )
-    # print(result)
+    for track in tracks:
+    	result = spotify.user_playlist_add_tracks(
+            config.SPOTIFY_USER, config.PLAYLIST_ID,tracks=[track]
+    )
+  
+def main():
+    new_album_ids = get_new_album_ids()
+    track_ids = []
+    for album_id in new_album_ids:
+        track_ids.extend(get_track_ids_for_album(album_id))
+    update_playlist(track_ids)
+    print("done!")
 
-    # # change the playlist description to a random fact
-    # post_description(job)
-
+ 
 
 if __name__ == "__main__":
 

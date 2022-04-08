@@ -19,7 +19,7 @@ spotify_date_format = "%Y-%m-%dT%H:%M:%S"
 # the way I want to see it
 date_format = "%Y-%m-%d %A, %I:%M %p"
 spotify_scope_warning = "signing into spotify...\nIf this program or another program with the same client_id\nhas changed scopes, you'll need to reauthorize each time.\nMake sure all programs have the same scope."
-scope = "playlist-modify-private, playlist-modify-public, user-library-read, playlist-read-private, user-library-modify, user-read-recently-played"
+scope = "playlist-modify-private, playlist-modify-public, user-library-read, playlist-read-private, user-library-modify, user-read-recently-played,user-top-read"
 now_utc = datetime.now()
 now_local = now_utc.astimezone()
 local_offset_str = datetime.strftime(now_local, "%z")

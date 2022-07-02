@@ -1,9 +1,14 @@
-def build_description(accepted_albums):
-    description = ""
+from typing import List
+
+
+from typing import List 
+
+from classes.albumClass import albumClass
+
+def build_description(accepted_albums: List[albumClass]) -> str:
+    description = []
 
     for album in accepted_albums:
-        description += f"{album['artists'][0]['name']} "
-        description += '"'
-        description += f"{album['name']} "
-        description += '", '
-    return description
+        album_description = f'{ album["artists"][0]["name"] } " {album["name"]} "'
+        description.append(album_description)
+    return ', '.join(description)

@@ -26,7 +26,7 @@ reject = [
     "argentine hip hop",
 ]
 
-# These artists will always be added to the playlist
+# These artists will always be added to the playlist, regardless of genre
 accept = [
     "Kodak Black",
     "Kanye West",

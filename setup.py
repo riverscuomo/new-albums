@@ -1,6 +1,6 @@
 from build_description import build_description
-from new_albums.services.get_spotify import get_spotify
-from new_albums.config import *
+from services.get_spotify import get_spotify
+from config import *
 from classes.albumClass import albumClass
 from classes.userClass import userClass
 from rich import print
@@ -33,12 +33,12 @@ def main():
     # filter_by_genre = input()
 
     # print("new_albums.setup main...")
-    print("=============================================")
-    print(
-        "new_albums currently not commited to source control. ",
-        "Set up to run by maintenance.py which makes it impossible to run this script separately.",
-        "That's also why all that stuff is commented out above.",
-    )
+    # print("=============================================")
+    # print(
+    #     "new_albums currently not commited to source control. ",
+    #     "Set up to run by maintenance.py which makes it impossible to run this script separately.",
+    #     "That's also why all that stuff is commented out above.",
+    # )
 
     album = albumClass(spotify)
 

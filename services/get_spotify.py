@@ -2,7 +2,7 @@ import os
 import logging
 from json.decoder import JSONDecodeError
 
-from new_albums.config import *
+from config import *
 import spotipy
 from spotipy import util
 

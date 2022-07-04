@@ -1,7 +1,7 @@
 from classes.artistClass import artistClass
 from classes.userClass import userClass
 from classes.toolsClass import toolsClass
-from data.fiat import reject, accept
+from new_albums.data.fiat import reject, accept
 
 
 class playlistClass:

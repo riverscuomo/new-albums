@@ -3,6 +3,7 @@ reject = [
     "alternative country",
     "alternative r&b",
     "alt z",
+    "banda",
     "ccm",
     "chicago drill",
     "christian",
@@ -10,6 +11,8 @@ reject = [
     "funk",
     "funk carioca",
     "latin",
+    "musica mexicana",
+    "oklahoma country",
     "venezolano",
     "reggaeton",
     "rap",
@@ -20,6 +23,7 @@ reject = [
     "hip hop",
     "r&b",
     "bluegrass",
+    "argentine hip hop",
 ]
 
 # These artists will always be added to the playlist

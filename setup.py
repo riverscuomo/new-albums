@@ -1,8 +1,6 @@
 from build_description import build_description
-import config
-from services.get_spotify import get_spotify
-from classes.artistClass import artistClass
-from classes.playlistClass import playlistClass
+from new_albums.services.get_spotify import get_spotify
+from new_albums.config import *
 from classes.albumClass import albumClass
 from classes.userClass import userClass
 from rich import print
@@ -13,30 +11,39 @@ spotify = get_spotify()
 
 def main():
 
-    # Ask for country
-    print("=============================================")
-    print(
-        " TYPE 'ALL' FOR ALL COUNTRIES OR SELECT YOUR COUNTRY USING ISO CODE. ex. US, UK, JP, ES,..."
-    )
-    print("=============================================")
-    country = input()
+    # # Ask for country
+    # print("=============================================")
+    # print(
+    #     " TYPE 'ALL' FOR ALL COUNTRIES OR SELECT YOUR COUNTRY USING ISO CODE. ex. US, UK, JP, ES,..."
+    # )
+    # print("=============================================")
+    # country = input()
 
-    # If is empty US by default, ALL is worldwide
-    if country == "":
-        country = "US"
+    # # If is empty US by default, ALL is worldwide
+    # if country == "":
+    #     country = "US"
 
-    if country.upper() == "ALL":
-        country = None
+    # if country.upper() == "ALL":
+    #     country = None
 
-    # Ask for filter by your user styles
-    print("=============================================")
-    print(" DO YOU WANT TO FILTER BY YOUR TOP GENRES. ('Y' or 'N')")
-    print("=============================================")
-    filter_by_genre = input()
+    # # Ask for filter by your user styles
+    # print("=============================================")
+    # print(" DO YOU WANT TO FILTER BY YOUR TOP GENRES. ('Y' or 'N')")
+    # print("=============================================")
+    # filter_by_genre = input()
 
     # print("new_albums.setup main...")
+    print("=============================================")
+    print(
+        "new_albums currently not commited to source control. ",
+        "Set up to run by maintenance.py which makes it impossible to run this script separately.",
+        "That's also why all that stuff is commented out above.",
+    )
 
     album = albumClass(spotify)
+
+    country = "US"
+    filter_by_genre = "N"
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(country, filter_by_genre)
@@ -55,14 +62,14 @@ def main():
 
     # Results display screen
 
-    if filter_by_genre.upper() == "Y":
-        print("=============================================")
-        print(" MY TOP GENRE LIST")
-        print("=============================================")
+    # if filter_by_genre.upper() == "Y":
+    #     print("=============================================")
+    #     print(" MY TOP GENRE LIST")
+    #     print("=============================================")
 
-        user = userClass(spotify)
-        user.set_user_top_genres()
-        print(f"+ {user.genres}")
+    #     user = userClass(spotify)
+    #     user.set_user_top_genres()
+    #     print(f"+ {user.genres}")
 
     print("=============================================")
     print(" ACCEPTED")
@@ -71,14 +78,14 @@ def main():
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
-    if filter_by_genre.upper() == "Y":
-        print("=============================================")
-        print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
-        print("=============================================")
-        for album in processed_albums.rejected_by_my_top:
-            print(
-                f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
-            )
+    # if filter_by_genre.upper() == "Y":
+    #     print("=============================================")
+    #     print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
+    #     print("=============================================")
+    #     for album in processed_albums.rejected_by_my_top:
+    #         print(
+    #             f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
+    #         )
 
     print("=============================================")
     print(" REJECTED BY GENRE FIAT")
@@ -91,29 +98,27 @@ def main():
     # print(result)
 
     print("=============================================")
-    print(f"updating spotify playlist for {config.SPOTIFY_USER}...")
+    print(f"updating spotify playlist for {SPOTIFY_USER}...")
 
     # empty playlist first
-    result = spotify.user_playlist_replace_tracks(
-        config.SPOTIFY_USER, config.PLAYLIST_ID, []
-    )
+    result = spotify.user_playlist_replace_tracks(SPOTIFY_USER, PLAYLIST_ID, [])
 
     # add all of the sublists of track_id_lists
     for sublist in track_id_lists:
-        result = spotify.user_playlist_add_tracks(
-            config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
-        )
+        result = spotify.user_playlist_add_tracks(SPOTIFY_USER, PLAYLIST_ID, sublist)
 
     description = build_description(processed_albums.accepted)
 
     spotify.user_playlist_change_details(
-        config.SPOTIFY_USER, config.PLAYLIST_ID, description=description
+        SPOTIFY_USER, PLAYLIST_ID, description=description
     )
 
     print("Done!")
     print(
         "Feel free to change your always accepted artists and always rejected genres in data.fiat.py and run again."
     )
+
+    return f"Success! {description}"
 
 
 if __name__ == "__main__":

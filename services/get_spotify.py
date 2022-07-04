@@ -1,13 +1,17 @@
 import os
+import logging
 from json.decoder import JSONDecodeError
 
 from new_albums.config import *
 import spotipy
-import spotipy.util as util
+from spotipy import util
 
 
-def get_spotify():
-    print("get_spotify...")
+def get_spotify() -> spotipy.Spotify:
+    logging.info("get_spotify...")
+
+    token = None
+    spotify = None
 
     try:
         token = util.prompt_for_user_token(
@@ -30,5 +34,6 @@ def get_spotify():
     if token:
         spotify = spotipy.Spotify(auth=token)
     else:
-        print(spotify_scope_warning)
+        logging.warn(config.spotify_scope_warning)
+        raise ValueError(config.spotify_scope_warning)
     return spotify

@@ -32,13 +32,8 @@ def main():
     # print("=============================================")
     # filter_by_genre = input()
 
-    # print("new_albums.setup main...")
-    # print("=============================================")
-    # print(
-    #     "new_albums currently not commited to source control. ",
-    #     "Set up to run by maintenance.py which makes it impossible to run this script separately.",
-    #     "That's also why all that stuff is commented out above.",
-    # )
+    print("new_albums.setup main...")
+    print("=============================================")
 
     album = albumClass(spotify)
 
@@ -68,7 +63,8 @@ def main():
     #     print("=============================================")
 
     #     user = userClass(spotify)
-    #     user.set_user_top_genres()
+    #     user.set_user_to
+    # from data import fiatp_genres()
     #     print(f"+ {user.genres}")
 
     print("=============================================")

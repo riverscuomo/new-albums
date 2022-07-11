@@ -1,6 +1,8 @@
 from classes.artistClass import artistClass
 from classes.userClass import userClass
 from classes.toolsClass import toolsClass
+
+from rich import print
 from data.fiat import reject, accept
 
 

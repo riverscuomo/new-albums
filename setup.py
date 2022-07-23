@@ -4,27 +4,38 @@ from config import *
 from classes.albumClass import albumClass
 from classes.userClass import userClass
 from rich import print
+import pycountry
+import argparse
 
 
 spotify = get_spotify()
+parser = argparse.ArgumentParser()
 
 
 def main():
 
-    # # Ask for country
-    # print("=============================================")
-    # print(
-    #     " TYPE 'ALL' FOR ALL COUNTRIES OR SELECT YOUR COUNTRY USING ISO CODE. ex. US, UK, JP, ES,..."
-    # )
-    # print("=============================================")
-    # country = input()
+    # Handle arguments
+    parser.add_argument("-c", "--country",
+                        help="Specify a country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.", default="US")
+    args = parser.parse_args()
+    country = args.country.upper()
 
-    # # If is empty US by default, ALL is worldwide
-    # if country == "":
-    #     country = "US"
+    # ALL is worldwide
+    if country == "ALL":
+        country = None
 
-    # if country.upper() == "ALL":
-    #     country = None
+    # LIST returns all available Spotify countries
+    if country == "LIST":
+        available_countries = list(spotify.available_markets().values())[0]
+        for code in available_countries:
+            if pycountry.countries.get(alpha_2=code):
+                country_name = pycountry.countries.get(alpha_2=code).name
+                print(country_name + " = " + "'" + code + "'")
+
+        print("=============================================")
+        print(" TYPE COUNTRY CODE, ex. 'US', 'GB', 'JP', 'ES'... ")
+        print("=============================================")
+        country = input().upper()
 
     # # Ask for filter by your user styles
     # print("=============================================")
@@ -37,7 +48,6 @@ def main():
 
     album = albumClass(spotify)
 
-    country = "US"
     filter_by_genre = "N"
 
     # Get albums lists

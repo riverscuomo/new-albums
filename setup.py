@@ -16,7 +16,7 @@ def main():
 
     # Handle arguments
     parser.add_argument("-c", "--country",
-                        help="Specify a country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.", default="US")
+                        help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.", default="US")
     args = parser.parse_args()
     country = args.country.upper()
 

@@ -16,7 +16,7 @@ Additionally, the New Albums script uses an Authorization Code Flow. Due to this
 
 ### Spotify Playlist Id
 
-The script will need the unique ID for one of your playlists. To get the ID for a playlist, in Spotify, right-click on the playlist > Share > Copy Share Link. The link will contain the playlist ID.
+The script will need the unique ID for one of your playlists. To get the ID for a playlist, in Spotify, right-click on the playlist > Share > Copy Share Link. The link will contain the playlist ID. It is the string between `playlist/` and `?si=`.
 
 ### Environment Variables
 

@@ -16,7 +16,7 @@ Additionally, the New Albums script uses an Authorization Code Flow. Due to this
 
 ### Spotify Playlist Id
 
-The script will need the unique ID for one of your playlists. To get the ID for a playlist, in Spotify, right-click on the playlist > Share > Copy Share Link. The link will contain the playlist ID.
+The script will need the unique ID for one of your playlists. To get the ID for a playlist, in Spotify, right-click on the playlist > Share > Copy Share Link. The link will contain the playlist ID. It is the string between `playlist/` and `?si=`.
 
 ### Environment Variables
 
@@ -37,3 +37,13 @@ The `fiat.py` file will be ignored by git.
 ## Running
 
 Once you have completed all the installation steps, run New Albums script by running `py setup.py`.
+
+### Filtering by country
+
+By default, the script will filter by US. To filter by a specific country, you can pass the `--country` flag followed by the country ISO code, e.g. `py setup.py --country JP`
+
+**Options**:
+- `py setup.py`: filters by US
+- `py setup.py --country GB`: filter by GB
+- `py setup.py --country list`: list all available Spotify country codes. The script then prompts you to type an ISO code.
+- `py setup.py --country all`: include all country codes (worldwide)

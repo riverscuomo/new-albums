@@ -21,7 +21,7 @@ def main():
         "-g", "--top-genres", help="Allows you to filter by your top genres.", default="N", nargs="?", const="Y")
     args = parser.parse_args()
     country = args.country.upper()
-    filter_by_genre = args.top_genres.upper()
+    filter_by_genre = args.top_genres
 
     # ALL is worldwide
     if country == "ALL":

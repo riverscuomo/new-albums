@@ -62,15 +62,14 @@ def main():
 
     # Results display screen
 
-    # if filter_by_genre.upper() == "Y":
-    #     print("=============================================")
-    #     print(" MY TOP GENRE LIST")
-    #     print("=============================================")
+    if filter_by_genre.upper() == "Y":
+        print("=============================================")
+        print(" MY TOP GENRE LIST")
+        print("=============================================")
 
-    #     user = userClass(spotify)
-    #     user.set_user_to
-    # from data import fiatp_genres()
-    #     print(f"+ {user.genres}")
+        user = userClass(spotify)
+        user.set_user_top_genres()
+        print(f"+ {user.genres}")
 
     print("=============================================")
     print(" ACCEPTED")
@@ -79,14 +78,14 @@ def main():
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
-    # if filter_by_genre.upper() == "Y":
-    #     print("=============================================")
-    #     print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
-    #     print("=============================================")
-    #     for album in processed_albums.rejected_by_my_top:
-    #         print(
-    #             f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
-    #         )
+    if filter_by_genre.upper() == "Y":
+        print("=============================================")
+        print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
+        print("=============================================")
+        for album in processed_albums.rejected_by_my_top:
+            print(
+                f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
+            )
 
     print("=============================================")
     print(" REJECTED BY GENRE FIAT")

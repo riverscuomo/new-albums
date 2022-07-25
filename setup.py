@@ -14,11 +14,14 @@ parser = argparse.ArgumentParser()
 
 def main():
 
-    # Handle arguments
+    # Handle arguments (country, top genres)
     parser.add_argument("-c", "--country",
                         help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.", default="US")
+    parser.add_argument(
+        "-g", "--top-genres", help="Allows you to filter by your top genres.", default="N", nargs="?", const="Y")
     args = parser.parse_args()
     country = args.country.upper()
+    filter_by_genre = args.top_genres
 
     # ALL is worldwide
     if country == "ALL":
@@ -37,18 +40,10 @@ def main():
         print("=============================================")
         country = input().upper()
 
-    # # Ask for filter by your user styles
-    # print("=============================================")
-    # print(" DO YOU WANT TO FILTER BY YOUR TOP GENRES. ('Y' or 'N')")
-    # print("=============================================")
-    # filter_by_genre = input()
-
     print("new_albums.setup main...")
     print("=============================================")
 
     album = albumClass(spotify)
-
-    filter_by_genre = "N"
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(country, filter_by_genre)
@@ -67,15 +62,14 @@ def main():
 
     # Results display screen
 
-    # if filter_by_genre.upper() == "Y":
-    #     print("=============================================")
-    #     print(" MY TOP GENRE LIST")
-    #     print("=============================================")
+    if filter_by_genre.upper() == "Y":
+        print("=============================================")
+        print(" MY TOP GENRE LIST")
+        print("=============================================")
 
-    #     user = userClass(spotify)
-    #     user.set_user_to
-    # from data import fiatp_genres()
-    #     print(f"+ {user.genres}")
+        user = userClass(spotify)
+        user.set_user_top_genres()
+        print(f"+ {user.genres}")
 
     print("=============================================")
     print(" ACCEPTED")
@@ -84,14 +78,14 @@ def main():
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
-    # if filter_by_genre.upper() == "Y":
-    #     print("=============================================")
-    #     print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
-    #     print("=============================================")
-    #     for album in processed_albums.rejected_by_my_top:
-    #         print(
-    #             f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
-    #         )
+    if filter_by_genre.upper() == "Y":
+        print("=============================================")
+        print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
+        print("=============================================")
+        for album in processed_albums.rejected_by_my_top:
+            print(
+                f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
+            )
 
     print("=============================================")
     print(" REJECTED BY GENRE FIAT")

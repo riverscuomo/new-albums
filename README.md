@@ -38,7 +38,7 @@ The `fiat.py` file will be ignored by git.
 
 Once you have completed all the installation steps, run New Albums script by running `py setup.py`.
 
-### Filtering by country
+### Filter by country
 
 By default, the script will filter by US. To filter by a specific country, you can pass the `--country` flag followed by the country ISO code, e.g. `py setup.py --country JP`
 
@@ -47,3 +47,11 @@ By default, the script will filter by US. To filter by a specific country, you c
 - `py setup.py --country GB`: filter by GB
 - `py setup.py --country list`: list all available Spotify country codes. The script then prompts you to type an ISO code.
 - `py setup.py --country all`: include all country codes (worldwide)
+
+`-c` can also be used as an abbreviation for `--country`, e.g. `py setup.py -c all`
+
+### Filter by top genres
+
+By default, the script will not filter by top genres. To enable this filter, you can pass the `--top-genres` flag, e.g. `py setup.py --top-genres`
+
+`-g` can also be used as an abbreviation for `--top-genres`, e.g. `py setup.py -g`

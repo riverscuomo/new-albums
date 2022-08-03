@@ -12,13 +12,29 @@ spotify = get_spotify()
 parser = argparse.ArgumentParser()
 
 
+def log(message):
+    print("=============================================")
+    print(message)
+    print("=============================================")
+
+
 def main():
 
     # Handle arguments (country, top genres)
-    parser.add_argument("-c", "--country",
-                        help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.", default="US")
     parser.add_argument(
-        "-g", "--top-genres", help="Allows you to filter by your top genres.", default="N", nargs="?", const="Y")
+        "-c",
+        "--country",
+        help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.",
+        default="US",
+    )
+    parser.add_argument(
+        "-g",
+        "--top-genres",
+        help="Allows you to filter by your top genres.",
+        default="N",
+        nargs="?",
+        const="Y",
+    )
     args = parser.parse_args()
     country = args.country.upper()
     filter_by_genre = args.top_genres
@@ -35,9 +51,8 @@ def main():
                 country_name = pycountry.countries.get(alpha_2=code).name
                 print(country_name + " = " + "'" + code + "'")
 
-        print("=============================================")
-        print(" TYPE COUNTRY CODE, ex. 'US', 'GB', 'JP', 'ES'... ")
-        print("=============================================")
+        log(" TYPE COUNTRY CODE, ex. 'US', 'GB', 'JP', 'ES'... ")
+
         country = input().upper()
 
     print("new_albums.setup main...")
@@ -63,40 +78,29 @@ def main():
     # Results display screen
 
     if filter_by_genre.upper() == "Y":
-        print("=============================================")
-        print(" MY TOP GENRE LIST")
-        print("=============================================")
+        log(" MY TOP GENRE LIST")
 
         user = userClass(spotify)
         user.set_user_top_genres()
         print(f"+ {user.genres}")
 
-    print("=============================================")
-    print(" ACCEPTED")
-    print("=============================================")
+    log(" ACCEPTED")
 
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
     if filter_by_genre.upper() == "Y":
-        print("=============================================")
-        print(" REJECTED BECAUSE OF MY TOP GENRE LIST")
-        print("=============================================")
+        log(" REJECTED BECAUSE OF MY TOP GENRE LIST")
         for album in processed_albums.rejected_by_my_top:
             print(
                 f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
             )
 
-    print("=============================================")
-    print(" REJECTED BY GENRE FIAT")
-    print("=============================================")
+    log(" REJECTED BY GENRE FIAT")
     for album in processed_albums.rejected_by_genre:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
     # Sending to spotify
-
-    # print(result)
-
     print("=============================================")
     print(f"updating spotify playlist for {SPOTIFY_USER}...")
 
@@ -107,7 +111,10 @@ def main():
     for sublist in track_id_lists:
         result = spotify.user_playlist_add_tracks(SPOTIFY_USER, PLAYLIST_ID, sublist)
 
-    description = build_description(processed_albums.accepted)
+    description = build_description(
+        processed_albums.accepted,
+        processed_albums.rejected_by_genre + processed_albums.rejected_by_my_top,
+    )
 
     spotify.user_playlist_change_details(
         SPOTIFY_USER, PLAYLIST_ID, description=description

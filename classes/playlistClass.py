@@ -25,20 +25,14 @@ class playlistClass:
             artist = artistClass(album["artists"][0]["id"], self.spotify)
             album["genres"] = artist.genres
 
-            # Check if any of the reject genres array equals the first element in artist.genres
+            # If the artist's first genre is in the reject list, reject the album.
+            # (This is a little less strict because I was missing some albums I'd like to hear.)
             if (
                 any(element in reject for element in [artist.genres[0]])
                 and artist.name not in accept
             ):
                 # print(f"Rejected by fiat: {artist.name}")
                 self.rejected_by_genre.append(album)
-
-            # # If the artist's first genre is in the reject list, reject the album.
-            # # (This is a little less strict because I was missing some albums I'd like to hear.)
-            # for r in reject:
-            #     if r == artist.genres[0] and artist.name not in accept:
-            #         self.rejected_by_genre.append(album)
-            #         break
 
             else:
                 # Albums that are not rejected

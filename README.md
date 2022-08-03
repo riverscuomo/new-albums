@@ -33,6 +33,7 @@ To view all currently set environment variables, use the command `set`.
 ### Set which genres to Reject
 Create your own `fiat.py` file inside of the data folder. This is what the script will use to determine which genres to reject from your playlist. You can use the fiat_example as a template.
 The `fiat.py` file will be ignored by git.
+The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have "dance pop" in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
 
 ## Running
 

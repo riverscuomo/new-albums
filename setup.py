@@ -6,10 +6,18 @@ from classes.userClass import userClass
 from rich import print
 import pycountry
 import argparse
-
+import sys
 
 spotify = get_spotify()
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(exit_on_error=False)
+
+# FOR RIVERS ONLY:
+# Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
+# Even though you have an argparser by a different name, they're both
+# accessing the same sys.argv.
+# print(sys.argv)
+if sys.argv[0] == "maintenance.py":
+    sys.argv = ["new_albums.py"]
 
 
 def log(message):
@@ -56,7 +64,6 @@ def main():
         country = input().upper()
 
     print("new_albums.setup main...")
-    print("=============================================")
 
     album = albumClass(spotify)
 

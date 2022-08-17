@@ -22,6 +22,8 @@ def build_description(
 def collect_items(albums: List[albumClass]) -> List[str]:
     items = []
     for album in albums:
-        item = f'{ album["artists"][0]["name"] } ({album["genres"][0]})'
+        # Handle artists with no genres
+        top_genre = album["genres"][0] if album["genres"] else "''"
+        item = f'{ album["artists"][0]["name"] } ({top_genre})'
         items.append(item)
     return items

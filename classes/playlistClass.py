@@ -27,7 +27,7 @@ class playlistClass:
 
             # If the artist's first genre is in the reject list, reject the album.
             # (This is a little less strict because I was missing some albums I'd like to hear.)
-            if (
+            if artist.genres != [] and (
                 any(element in reject for element in [artist.genres[0]])
                 and artist.name not in accept
             ):

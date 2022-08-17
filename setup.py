@@ -11,14 +11,6 @@ import sys
 spotify = get_spotify()
 parser = argparse.ArgumentParser(exit_on_error=False)
 
-# FOR RIVERS ONLY:
-# Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
-# Even though you have an argparser by a different name, they're both
-# accessing the same sys.argv.
-# print(sys.argv)
-if sys.argv[0] == "maintenance.py":
-    sys.argv = ["new_albums.py"]
-
 
 def log(message):
     print("=============================================")
@@ -27,6 +19,16 @@ def log(message):
 
 
 def main():
+
+    # FOR RIVERS ONLY:
+    # Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
+    # Even though you have an argparser by a different name, they're both
+    # accessing the same sys.argv.
+    print(sys.argv)
+    if sys.argv[0] == "maintenance.py":
+        sys.argv = ["new_albums.py"]
+
+    print(sys.argv)
 
     # Handle arguments (country, top genres)
     parser.add_argument(

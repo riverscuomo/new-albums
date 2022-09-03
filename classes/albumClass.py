@@ -23,7 +23,7 @@ class albumClass:
         """
 
         # If country is defined, it filter by country otherwise will search worldwide
-        new = self.spotify.new_releases(limit=limit, country=country.upper() if country else country )[
+        new = self.spotify.new_releases(limit=limit, country=country.upper() if country is not None else country )[
             "albums"
         ]["items"]
 

@@ -1,5 +1,5 @@
 
-class artistClass :
+class artistClass:
 
     def __init__(self,artist_id,spotify):
         # Init elements #

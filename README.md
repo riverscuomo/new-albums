@@ -8,7 +8,7 @@ Before you can run the New Albums script, there are some pre-requisites the scri
 
 ### Spotify Developer Account
 
-The script will need a Spotify Client Id and Client Secret to interact with Spotify's Web API.
+The script will need a Spotify **Client Id** and **Client Secret** to interact with Spotify's Web API.
 
 Register for a [developer account](https://developer.spotify.com) on Spotify. After registering, create a new app. Once you create a new app, a Client Id and Client Secret will be generated. You will need these in later steps.
 
@@ -20,6 +20,8 @@ The script will need the unique ID for one of your playlists. To get the ID for 
 
 ### Environment Variables
 
+#### Windows
+
 FIRST SET UP ENVIRONMENT VARIABLES ON YOUR COMPUTER, [SEE HERE FOR INSTRUCTIONS](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10).
 
 To set all 4 in a one-liner on Windows:
@@ -30,10 +32,20 @@ set SPOTIFY_CLIENT_ID=xxx && set SPOTIFY_CLIENT_SECRET=xxx && set SPOTIFY_REDIRE
 
 To view all currently set environment variables, use the command `set`.
 
+### Linux
+
+To set all 4 in a one-liner on Linux: ([Instructions](https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/))
+
+```cmd
+export SPOTIFY_CLIENT_ID=xxx && export SPOTIFY_CLIENT_SECRET=xxx && export SPOTIFY_REDIRECT_URI='http://localhost:8080' && export NEW_ALBUMS_PLAYLIST_ID=xxx && export SPOTIFY_USER=xxx
+```
+
+To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
+
 ### Set which genres to Reject
-Create your own `fiat.py` file inside of the data folder. This is what the script will use to determine which genres to reject from your playlist. You can use the fiat_example as a template.
+Create your own `fiat.py` file inside of the `data` folder. This is what the script will use to determine which genres to reject from your playlist. You can use the `fiat_example.py` as a template.
 The `fiat.py` file will be ignored by git.
-The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have "dance pop" in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
+The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
 
 ## Running
 

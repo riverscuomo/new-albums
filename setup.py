@@ -131,7 +131,7 @@ def main():
 
     print("Done!")
     print(
-        "Feel free to change your always accepted artists and always rejected genres in data.fiat.py and run again."
+        "Feel free to change your always accepted artists and always rejected genres in data/fiat.py and run again."
     )
 
     return f"Success! {description}"

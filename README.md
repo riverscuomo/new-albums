@@ -32,7 +32,7 @@ set SPOTIFY_CLIENT_ID=xxx && set SPOTIFY_CLIENT_SECRET=xxx && set SPOTIFY_REDIRE
 
 To view all currently set environment variables, use the command `set`.
 
-### Linux
+#### MacOS/Linux
 
 To set all 4 in a one-liner on Linux: ([Instructions](https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/))
 
@@ -46,6 +46,18 @@ To view all currently set environment variables, use the command `env`. You can 
 Create your own `fiat.py` file inside of the `data` folder. This is what the script will use to determine which genres to reject from your playlist. You can use the `fiat_example.py` as a template.
 The `fiat.py` file will be ignored by git.
 The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
+
+### Create a Virtual Environment (optional)
+
+These steps is not necessary, but recommended for environment isolation. You could use [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html) (and [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/index.html)) or just the built-in [venv](https://docs.python.org/3/library/venv.html).
+
+### Install dependencies
+
+Run:
+
+```
+pip install -r requirements.txt
+```
 
 ## Running
 

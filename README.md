@@ -37,8 +37,10 @@ To view all currently set environment variables, use the command `set`.
 To set all 4 in a one-liner on Linux: ([Instructions](https://www.serverlab.ca/tutorials/linux/administration-linux/how-to-set-environment-variables-in-linux/))
 
 ```cmd
-export SPOTIFY_CLIENT_ID=xxx && export SPOTIFY_CLIENT_SECRET=xxx && export SPOTIFY_REDIRECT_URI='http://localhost:8080' && export NEW_ALBUMS_PLAYLIST_ID=xxx && export SPOTIFY_USER=xxx
+ export SPOTIFY_CLIENT_ID=xxx && export SPOTIFY_CLIENT_SECRET=xxx && export SPOTIFY_REDIRECT_URI='http://localhost:8080' && export NEW_ALBUMS_PLAYLIST_ID=xxx && export SPOTIFY_USER=xxx
 ```
+
+Note that there is a space before the first export.  This is intentional and should not be removed: a leading space in most terminals instructs the terminal not to lodge the command in the history file, leaving fewer traces of your environment keys in side effecting channels.
 
 To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
 

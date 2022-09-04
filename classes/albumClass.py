@@ -16,19 +16,16 @@ class albumClass:
             "type",
         ]
 
-    def get_new_album_ids(self, country=None, filter_by_your_top_genres="N", limit=20):
+    def get_new_album_ids(self,  filter_by_your_top_genres, country=None, limit=20):
         """
         Get all the album ids from the last x new albums.
         It doesn't include single-only releases OR any genres you've marked as reject.
         """
 
         # If country is defined, it filter by country otherwise will search worldwide
-        if country is None:
-            new = self.spotify.new_releases(limit=limit)["albums"]["items"]
-        else:
-            new = self.spotify.new_releases(limit=limit, country=country.upper())[
-                "albums"
-            ]["items"]
+        new = self.spotify.new_releases(limit=limit, country=country.upper() if country is not None else country )[
+            "albums"
+        ]["items"]
 
         new.sort(key=lambda x: x["release_date"], reverse=True)
 
@@ -44,7 +41,7 @@ class albumClass:
         playlist = playlistClass(new_albums, self.spotify)
 
         # If user choose to filter by his top genres then .... FILTER BY YOUR TOP GENRES ( function filter_by_your_top_genres in playlistClass)
-        if filter_by_your_top_genres.upper() == "Y":
+        if filter_by_your_top_genres:
             playlist.filter_by_your_top_genres(new_albums)
 
         playlist.filter_by_fiat(new_albums)

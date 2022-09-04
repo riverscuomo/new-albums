@@ -9,7 +9,7 @@ import argparse
 import sys
 
 spotify = get_spotify()
-parser = argparse.ArgumentParser(exit_on_error=False)
+parser = argparse.ArgumentParser(exit_on_error=False) if sys.version_info >= (3,9) else argparse.ArgumentParser()
 
 
 def log(message):
@@ -37,14 +37,8 @@ def main():
         help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.",
         default="US",
     )
-    parser.add_argument(
-        "-g",
-        "--top-genres",
-        help="Allows you to filter by your top genres.",
-        default="N",
-        nargs="?",
-        const="Y",
-    )
+    # a boolean kwarg should really just be optional and default to bools in memory, not strings
+    parser.add_argument('--top-genres', '-g', action='store_true', help="Allows you to filter by your top genres.", default=False)
     args = parser.parse_args()
     country = args.country.upper()
     filter_by_genre = args.top_genres
@@ -70,7 +64,7 @@ def main():
     album = albumClass(spotify)
 
     # Get albums lists
-    processed_albums = album.get_new_album_ids(country, filter_by_genre)
+    processed_albums = album.get_new_album_ids(country=country, filter_by_your_top_genres=filter_by_genre)
 
     track_ids = []
 
@@ -86,7 +80,7 @@ def main():
 
     # Results display screen
 
-    if filter_by_genre.upper() == "Y":
+    if filter_by_genre:
         log(" MY TOP GENRE LIST")
 
         user = userClass(spotify)
@@ -98,7 +92,7 @@ def main():
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
-    if filter_by_genre.upper() == "Y":
+    if filter_by_genre:
         log(" REJECTED BECAUSE OF MY TOP GENRE LIST")
         for album in processed_albums.rejected_by_my_top:
             print(
@@ -117,8 +111,7 @@ def main():
     result = spotify.user_playlist_replace_tracks(SPOTIFY_USER, PLAYLIST_ID, [])
 
     # add all of the sublists of track_id_lists
-    for sublist in track_id_lists:
-        result = spotify.user_playlist_add_tracks(SPOTIFY_USER, PLAYLIST_ID, sublist)
+    result = [spotify.user_playlist_add_tracks(SPOTIFY_USER, PLAYLIST_ID, sublist) for sublist in track_id_lists]
 
     description = build_description(
         processed_albums.accepted,

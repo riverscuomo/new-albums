@@ -1,4 +1,4 @@
-from classes.toolsClass import toolsClass
+from .toolsClass import toolsClass
 
 class userClass :
 

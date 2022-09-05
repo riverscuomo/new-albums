@@ -20,6 +20,8 @@ The script will need the unique ID for one of your playlists. To get the ID for 
 
 ### Environment Variables
 
+You can specify custom environment variables to include using a `.env` file.  Alternatively, you can set them manually using the information below.
+
 #### Windows
 
 FIRST SET UP ENVIRONMENT VARIABLES ON YOUR COMPUTER, [SEE HERE FOR INSTRUCTIONS](https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10).
@@ -45,8 +47,8 @@ Note that there is a space before the first export.  This is intentional and sho
 To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
 
 ### Set which genres to Reject
-Create your own `fiat.py` file inside of the `data` folder. This is what the script will use to determine which genres to reject from your playlist. You can use the `fiat_example.py` as a template.
-The `fiat.py` file will be ignored by git.
+By default, the genres specified in `new_albums._default_fiat` is used to filter genres.  You can add a custom fiat file in the `new_albums` folder and specify the name in your .env file usimg the `FIAT_FILE` variable.   
+
 The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
 
 ### Create a Virtual Environment (optional)
@@ -55,30 +57,36 @@ These steps is not necessary, but recommended for environment isolation. You cou
 
 ### Install dependencies
 
-Run:
+Installing the package adds the dependencies specified in the setup.py file
 
 ```
-pip install -r requirements.txt
+pip install .
 ```
+
+### Local development
+
+The package can be installed in develop mode to allow you to make changes locally.
+
+`pip install . develop`  
 
 ## Running
 
-Once you have completed all the installation steps, run New Albums script by running `py setup.py`.
+Once you have completed all the installation steps, run New Albums script by running `py -m new_albums`.
 
 ### Filter by country
 
-By default, the script will filter by US. To filter by a specific country, you can pass the `--country` flag followed by the country ISO code, e.g. `py setup.py --country JP`
+By default, the script will filter by US. To filter by a specific country, you can pass the `--country` flag followed by the country ISO code, e.g. `py -m new_albums --country JP`
 
 **Options**:
-- `py setup.py`: filters by US
-- `py setup.py --country GB`: filter by GB
-- `py setup.py --country list`: list all available Spotify country codes. The script then prompts you to type an ISO code.
-- `py setup.py --country all`: include all country codes (worldwide)
+- `py -m new_albums`: filters by US
+- `py -m new_albums --country GB`: filter by GB
+- `py -m new_albums --country list`: list all available Spotify country codes. The script then prompts you to type an ISO code.
+- `py -m new_albums --country all`: include -m new_albums codes (worldwide)
 
-`-c` can also be used as an abbreviation for `--country`, e.g. `py setup.py -c all`
+`-c` can also be used as an abbreviation for `--country`, e.g. `py -m new_albums -c all`
 
 ### Filter by top genres
 
-By default, the script will not filter by top genres. To enable this filter, you can pass the `--top-genres` flag, e.g. `py setup.py --top-genres`
+By default, the script will not filter by top genres. To enable this filter, you can pass the `--top-genres` flag, e.g. `py -m new_albums --top-genres`
 
-`-g` can also be used as an abbreviation for `--top-genres`, e.g. `py setup.py -g`
+`-g` can also be used as an abbreviation for `--top-genres`, e.g. `py -m new_albums -g`

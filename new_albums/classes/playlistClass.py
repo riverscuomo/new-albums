@@ -1,18 +1,40 @@
-from classes.artistClass import artistClass
-from classes.userClass import userClass
-from classes.toolsClass import toolsClass
+from importlib import import_module
+from typing import List, Tuple
+import os
 
 from rich import print
-from data.fiat import reject, accept
+
+from .artistClass import artistClass
+from .userClass import userClass
+from .toolsClass import toolsClass
+from new_albums.config import FIAT_FILE
+# from data.fiat import reject, accept
 
 
 class playlistClass:
     def __init__(self, playlistId, spotify):
         # Init elements #
         self.spotify = spotify
+        
+        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(FIAT_FILE)
+
         self.accepted = []
         self.rejected_by_genre = []
         self.rejected_by_my_top = []
+        
+    def get_accepted_rejected_from_fiat_file(self, fiat_file: str) -> Tuple[List[str], List[str]]:
+        # Parse the accepted / rejected from a Python fiat file
+        try:
+            mod = import_module("."+fiat_file, package="new_albums")
+        except ValueError as e:
+            print(f"Error importing from fiat file: {fiat_file} - {e}")     
+        
+        # Check that the imported module has the expected attributes: reject, accept
+        for item in ('accept', 'reject'):
+            if not hasattr(mod, item):
+                raise ValueError(f"Cannot find {item} list in fiat file")
+
+        return mod.accept, mod.reject
 
     def filter_by_fiat(self, new_albums):
         """
@@ -28,8 +50,8 @@ class playlistClass:
             # If the artist's first genre is in the reject list, reject the album.
             # (This is a little less strict because I was missing some albums I'd like to hear.)
             if artist.genres != [] and (
-                any(element in reject for element in [artist.genres[0]])
-                and artist.name not in accept
+                any(element in self.reject for element in [artist.genres[0]])
+                and artist.name not in self.accept
             ):
                 # print(f"Rejected by fiat: {artist.name}")
                 self.rejected_by_genre.append(album)

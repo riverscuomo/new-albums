@@ -1,4 +1,4 @@
-from classes.playlistClass import playlistClass
+from .playlistClass import playlistClass
 
 
 class albumClass:

@@ -2,9 +2,10 @@ import os
 import logging
 from json.decoder import JSONDecodeError
 
-from config import *
+from new_albums.config import SPOTIFY_USER, SPOTIFY_REDIRECT_URI, scope, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, spotify_scope_warning
+
 import spotipy
-from spotipy import util
+from spotipy.util import prompt_for_user_token
 
 
 def get_spotify() -> spotipy.Spotify:
@@ -13,8 +14,9 @@ def get_spotify() -> spotipy.Spotify:
     token = None
     spotify = None
 
+    # TODO: Perhaps have this logic in a loop until it gets the correct credentials
     try:
-        token = util.prompt_for_user_token(
+        token = prompt_for_user_token(
             SPOTIFY_USER,
             redirect_uri=SPOTIFY_REDIRECT_URI,
             scope=scope,
@@ -23,7 +25,7 @@ def get_spotify() -> spotipy.Spotify:
         )
     except (AttributeError, JSONDecodeError):
         os.remove(f".cache-{SPOTIFY_USER}")
-        token = util.prompt_for_user_token(
+        token = prompt_for_user_token(
             SPOTIFY_USER,
             redirect_uri=SPOTIFY_REDIRECT_URI,
             scope=scope,
@@ -34,6 +36,6 @@ def get_spotify() -> spotipy.Spotify:
     if token:
         spotify = spotipy.Spotify(auth=token)
     else:
-        logging.warn(config.spotify_scope_warning)
-        raise ValueError(config.spotify_scope_warning)
+        logging.warn(spotify_scope_warning)
+        raise ValueError(spotify_scope_warning)
     return spotify

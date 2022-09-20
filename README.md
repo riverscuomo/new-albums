@@ -75,7 +75,7 @@ Note that there is a space before the first export.  This is intentional and sho
 To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
 
 ### Set which genres to Reject
-By default, the genres specified in `new_albums._default_fiat` is used to filter genres.  You can add a custom fiat file in the `new_albums` folder and specify the name in your `.env` file using the `FIAT_FILE` variable.
+By default, the genres specified in `new_albums._default_fiat` is used to filter genres.  You can add a custom fiat file in the `new_albums` folder and specify the name in your `.env` file using the `FIAT_FILE` variable **or** with the `--fiat` argument.
 
 The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
 

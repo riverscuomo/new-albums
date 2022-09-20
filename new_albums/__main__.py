@@ -1,3 +1,4 @@
+import logging
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
 import new_albums.config as config
@@ -7,6 +8,7 @@ from rich import print
 import pycountry
 import argparse
 import sys
+import spotipy
 
 
 def log(message):
@@ -16,75 +18,102 @@ def log(message):
 
 
 def create_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(exit_on_error=False) if sys.version_info >= (3,9) else argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Update a Spotify playlist with new songs from any significant albums.",
+        epilog="Check README.md for help setting up the required environment variables.",
+    )
+
     parser.add_argument(
         "-c",
         "--country",
         help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.",
         default="US",
     )
-    
+
     # a boolean kwarg should really just be optional and default to bools in memory, not strings
     parser.add_argument(
-        '--top-genres', 
-        '-g', 
-        action='store_true', 
-        help="Allows you to filter by your top genres.", 
-        default=False
+        "--top-genres",
+        "-g",
+        action="store_true",
+        help="Allows you to filter by your top genres.",
+        default=False,
     )
 
     parser.add_argument(
         "--fiat",
         "-f",
-        help="File to use as fiat data instead of defaults",
-        default="_default_fiat.py"
+        help="File to use as fiat data instead of defaults.",
+        default="_default_fiat.py",
     )
 
     return parser
 
 
-def main():
+def markets(spotify):
+    """Fetch and print available markets.
 
+    Spotify requires authenication in order to request the available markets from
+    its API.
+
+    Parameters
+    ----------
+    spotify : spotipy.client.Spotipy
+        An authenicated Spotipy instance.
+
+    Returns
+    -------
+    None
+    """
+    logging.debug("[markets]: Retrieving available markets.")
+    available_countries = spotify.available_markets()["markets"]
+
+    log(" Spotify is available in...")
+
+    for code in available_countries:
+        if pycountry.countries.get(alpha_2=code):
+            country_name = pycountry.countries.get(alpha_2=code).name
+            print(country_name + " = " + "'" + code + "'")
+
+    log(
+        " Rerun the script with the desired country code; ex. 'US', 'GB', 'JP', 'ES'... "
+    )
+
+
+def parse_country(country, spotify):
+    logging.debug(f"[parse_country]: Parsing country code: {country}")
+
+    if country == "ALL":
+        # ALL is worldwide (None)
+        return None
+    elif country == "LIST":
+        markets(spotify)
+        sys.exit(0)
+    elif country in spotify.available_markets()["markets"]:
+        print(f"Filtering on country code {country}.")
+        return country
+    else:
+        raise ValueError(
+            f"Country code {country} is invalid.\nRun the scripts with `-c list` to see the available markets."
+        )
+
+
+def main():
     # FOR RIVERS ONLY:
     # Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
     # Even though you have an argparser by a different name, they're both
     # accessing the same sys.argv.
-    print(sys.argv)
+    logging.debug(sys.argv)
     if sys.argv[0] == "maintenance.py":
         sys.argv = ["new_albums.py"]
 
-    print(sys.argv)
+    logging.debug(sys.argv)
 
     # Setup and parse arguments
-    parser =  create_parser()
+    parser = create_parser()
     args = parser.parse_args()
-    
-    country = args.country.upper()
     filter_by_genre = args.top_genres
 
-    # ALL is worldwide
-    if country == "ALL":
-        country = None
-
-    # LIST returns all available Spotify countries
-    #
-    # TODO: This should almost be a separate script / function
-    #    To be run once by the user or even just link to a webpage with this info
-    #
-    #    $> python -m new_albums list
-
-    if country == "LIST":
-        available_countries = list(spotify.available_markets().values())[0]
-        for code in available_countries:
-            if pycountry.countries.get(alpha_2=code):
-                country_name = pycountry.countries.get(alpha_2=code).name
-                print(country_name + " = " + "'" + code + "'")
-
-        log(" TYPE COUNTRY CODE, ex. 'US', 'GB', 'JP', 'ES'... ")
-
-        country = input().upper()
-
-    print("new_albums.setup main...")
+    logging.debug("new_albums.setup main...")
 
     try:
         spotify = get_spotify()
@@ -92,10 +121,16 @@ def main():
         log("Could not get spotify auth. Exiting")
         sys.exit(1)
 
+    # Parse country/markets
+    # Calls the Spotify API and therefore requires authentication
+    country = parse_country(args.country.upper(), spotify)
+
     album = albumClass(spotify)
 
     # Get albums lists
-    processed_albums = album.get_new_album_ids(country=country, filter_by_your_top_genres=filter_by_genre)
+    processed_albums = album.get_new_album_ids(
+        country=country, filter_by_your_top_genres=filter_by_genre
+    )
 
     track_ids = []
 
@@ -139,10 +174,17 @@ def main():
     print(f"updating spotify playlist for {config.SPOTIFY_USER}...")
 
     # empty playlist first
-    result = spotify.user_playlist_replace_tracks(config.SPOTIFY_USER, config.PLAYLIST_ID, [])
+    result = spotify.user_playlist_replace_tracks(
+        config.SPOTIFY_USER, config.PLAYLIST_ID, []
+    )
 
     # add all of the sublists of track_id_lists
-    result = [spotify.user_playlist_add_tracks(config.SPOTIFY_USER, config.PLAYLIST_ID, sublist) for sublist in track_id_lists]
+    result = [
+        spotify.user_playlist_add_tracks(
+            config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
+        )
+        for sublist in track_id_lists
+    ]
 
     description = build_description(
         processed_albums.accepted,

@@ -12,6 +12,17 @@ import spotipy
 
 
 def log(message):
+    """User facing log messages.
+
+    Parameters
+    ----------
+    message : str
+        Message to print.
+
+    Returns
+    -------
+    None
+    """
     print("=============================================")
     print(message)
     print("=============================================")
@@ -44,6 +55,13 @@ def create_parser() -> argparse.ArgumentParser:
         "-f",
         help="File to use as fiat data instead of defaults.",
         default="_default_fiat.py",
+    )
+
+    parser.add_argument(
+        "--log",
+        "-l",
+        help="Set logging granularity. One of: debug, info, warning, error, critical",
+        default="warning",
     )
 
     return parser
@@ -80,21 +98,61 @@ def markets(spotify):
 
 
 def parse_country(country, spotify):
+    """Validate the country code argument.
+
+    Parameters
+    ----------
+    country : str
+        The country code passed into the script.
+    spotify : spotipy.client.Spotipy
+        Authenicated Spotipy client.
+
+    Returns
+    -------
+    str
+        Validated country code.
+    """
     logging.debug(f"[parse_country]: Parsing country code: {country}")
 
     if country == "ALL":
         # ALL is worldwide (None)
+        logging.info(f"[parse_country] Global country filter")
         return None
     elif country == "LIST":
         markets(spotify)
         sys.exit(0)
     elif country in spotify.available_markets()["markets"]:
-        print(f"Filtering on country code {country}.")
+        logging.info(f"[parse_country] Filtering on country code {country}.")
         return country
     else:
         raise ValueError(
             f"Country code {country} is invalid.\nRun the scripts with `-c list` to see the available markets."
         )
+
+
+def init_logging(log_level):
+    """Initialize logging.
+
+    Parameters
+    ----------
+    log_level : str
+        Logging level. Must be one of debug, info, warning, error, or critical.
+
+    Returns
+    -------
+    None
+    """
+    # Validate log_level. This code is more or less exactly how the docs handle it.
+    numeric_level = getattr(logging, log_level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError(f"`{log_level}` is an invalid log level.")
+
+    # Set requested level as well as a nicer default format.
+    logging.basicConfig(
+        format="(%(asctime)s (%(levelname)s)) => %(message)s", level=numeric_level
+    )
+
+    logging.debug("[init_logging] Logger initialized.")
 
 
 def main():
@@ -111,9 +169,10 @@ def main():
     # Setup and parse arguments
     parser = create_parser()
     args = parser.parse_args()
+    init_logging(args.log)
     filter_by_genre = args.top_genres
 
-    logging.debug("new_albums.setup main...")
+    logging.debug("[main] Creating Spotipy instance.")
 
     try:
         spotify = get_spotify()

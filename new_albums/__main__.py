@@ -1,14 +1,17 @@
-import logging
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
-import new_albums.config as config
 from new_albums.classes.albumClass import albumClass
 from new_albums.classes.userClass import userClass
 from rich import print
+import new_albums
+import new_albums.config as config
+import os
+import importlib
 import pycountry
 import argparse
 import sys
 import spotipy
+import logging
 
 
 def log(message):
@@ -54,7 +57,6 @@ def create_parser() -> argparse.ArgumentParser:
         "--fiat",
         "-f",
         help="File to use as fiat data instead of defaults.",
-        default="_default_fiat.py",
     )
 
     parser.add_argument(
@@ -149,10 +151,38 @@ def init_logging(log_level):
 
     # Set requested level as well as a nicer default format.
     logging.basicConfig(
-        format="(%(asctime)s (%(levelname)s)) => %(message)s", level=numeric_level
+        force=True,
+        format="(%(asctime)s (%(levelname)s)) => %(message)s",
+        level=numeric_level,
     )
 
     logging.debug("[init_logging] Logger initialized.")
+
+
+def init_fiat(args):
+    """Dynamically set a fiat file.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments.
+
+    Returns
+    -------
+    None
+    """
+    logging.debug(f"[init_fiat] Fiat argument: {args.fiat}")
+
+    if args.fiat is not None:
+        logging.info(f"[init_fiat] Using {args.fiat} as a fiat file.")
+
+        # Logic is a bit hacky.
+        # The FIAT_FILE env var is overwritten and decouple is reloaded so that it
+        # loads the new changes AND sets the global variables.
+        # Unfortunately, decouple's config instance is immutable. A cleaner solution
+        # requires a larger scale overhaul of the script. This is fine for now.
+        os.environ["FIAT_FILE"] = args.fiat
+        importlib.reload(config)
 
 
 def main():
@@ -170,6 +200,7 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
     init_logging(args.log)
+    init_fiat(args)
     filter_by_genre = args.top_genres
 
     logging.debug("[main] Creating Spotipy instance.")
@@ -184,7 +215,7 @@ def main():
     # Calls the Spotify API and therefore requires authentication
     country = parse_country(args.country.upper(), spotify)
 
-    album = albumClass(spotify)
+    album = albumClass(spotify, config.FIAT_FILE)
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(

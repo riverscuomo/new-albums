@@ -12,23 +12,24 @@ from new_albums.config import FIAT_FILE
 
 
 class playlistClass:
-    def __init__(self, playlistId, spotify):
+    def __init__(self, playlistId, spotify, fiat_file=FIAT_FILE):
         # Init elements #
         self.spotify = spotify
-        
-        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(FIAT_FILE)
+
+        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(fiat_file)
 
         self.accepted = []
         self.rejected_by_genre = []
         self.rejected_by_my_top = []
-        
+
     def get_accepted_rejected_from_fiat_file(self, fiat_file: str) -> Tuple[List[str], List[str]]:
         # Parse the accepted / rejected from a Python fiat file
+        print(f"FIAT_FILE: {fiat_file}")
         try:
             mod = import_module("."+fiat_file, package="new_albums")
         except ValueError as e:
-            print(f"Error importing from fiat file: {fiat_file} - {e}")     
-        
+            print(f"Error importing from fiat file: {fiat_file} - {e}")
+
         # Check that the imported module has the expected attributes: reject, accept
         for item in ('accept', 'reject'):
             if not hasattr(mod, item):

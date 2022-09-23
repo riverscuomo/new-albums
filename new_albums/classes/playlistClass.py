@@ -1,6 +1,6 @@
 from importlib import import_module
 from typing import List, Tuple
-import os
+import logging
 
 from rich import print
 
@@ -24,16 +24,30 @@ class playlistClass:
 
     def get_accepted_rejected_from_fiat_file(self, fiat_file: str) -> Tuple[List[str], List[str]]:
         # Parse the accepted / rejected from a Python fiat file
-        print(f"FIAT_FILE: {fiat_file}")
+        logging.debug(f"[playListClass]: Fiat file gut check: {fiat_file}")
         try:
             mod = import_module("."+fiat_file, package="new_albums")
-        except ValueError as e:
-            print(f"Error importing from fiat file: {fiat_file} - {e}")
+        except ModuleNotFoundError as e:
+            logging.critical(f"[playListClass]: Error importing from fiat file: {fiat_file} - {e}")
+            raise e
 
         # Check that the imported module has the expected attributes: reject, accept
         for item in ('accept', 'reject'):
             if not hasattr(mod, item):
+                logging.critical(f"[playListClass]: {item} not found in {fiat_file}.\nYour fiat file should have two lists: `accept` and `reject`.")
                 raise ValueError(f"Cannot find {item} list in fiat file")
+
+        # Check that accept and reject are list.
+        if not isinstance(mod.accept, list) or not isinstance(mod.reject, list):
+            logging.critical("[playListClass]: `accept` or `reject` is not a list.")
+            logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
+            raise TypeError("In your fiat file, `accept` and `reject` should be lists of strings.")
+
+        # Check that accept and reject only consist of strings.
+        if not all(map(lambda x: isinstance(x, str), mod.accept + mod.reject)):
+            logging.critical("[playListClass]: `accept` or `reject` doesn't consist only of strings.")
+            logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
+            raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
 
         return mod.accept, mod.reject
 
@@ -50,7 +64,7 @@ class playlistClass:
 
             # If the artist's first genre is in the reject list, reject the album.
             # (This is a little less strict because I was missing some albums I'd like to hear.)
-            if artist.genres != [] and (
+            if artist.genres and (
                 any(element in self.reject for element in [artist.genres[0]])
                 and artist.name not in self.accept
             ):

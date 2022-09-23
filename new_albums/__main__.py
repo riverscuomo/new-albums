@@ -27,7 +27,7 @@ def log(message):
     None
     """
     print("=============================================")
-    print(message)
+    print(" " + message)
     print("=============================================")
 
 
@@ -87,7 +87,7 @@ def markets(spotify):
     logging.debug("[markets]: Retrieving available markets.")
     available_countries = spotify.available_markets()["markets"]
 
-    log(" Spotify is available in...")
+    log("Spotify is available in...")
 
     for code in available_countries:
         if pycountry.countries.get(alpha_2=code):
@@ -95,7 +95,7 @@ def markets(spotify):
             print(country_name + " = " + "'" + code + "'")
 
     log(
-        " Rerun the script with the desired country code; ex. 'US', 'GB', 'JP', 'ES'... "
+        "Rerun the script with the desired country code; ex. 'US', 'GB', 'JP', 'ES'... "
     )
 
 
@@ -237,25 +237,25 @@ def main():
     # Results display screen
 
     if filter_by_genre:
-        log(" MY TOP GENRE LIST")
+        log("MY TOP GENRE LIST")
 
         user = userClass(spotify)
         user.set_user_top_genres()
         print(f"+ {user.genres}")
 
-    log(" ACCEPTED")
+    log("ACCEPTED")
 
     for album in processed_albums.accepted:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 
     if filter_by_genre:
-        log(" REJECTED BECAUSE OF MY TOP GENRE LIST")
+        log("REJECTED BECAUSE OF MY TOP GENRE LIST")
         for album in processed_albums.rejected_by_my_top:
             print(
                 f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
             )
 
-    log(" REJECTED BY GENRE FIAT")
+    log("REJECTED BY GENRE FIAT")
     for album in processed_albums.rejected_by_genre:
         print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
 

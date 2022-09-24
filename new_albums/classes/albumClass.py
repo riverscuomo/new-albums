@@ -1,10 +1,12 @@
 from .playlistClass import playlistClass
+from new_albums.config import FIAT_FILE
 
 
 class albumClass:
-    def __init__(self, spotify):
+    def __init__(self, spotify, fiat_file=FIAT_FILE):
         # Init elements #
         self.spotify = spotify
+        self.fiat_file = fiat_file
         self.reject_fields = [
             "available_markets",
             "external_urls",
@@ -37,8 +39,8 @@ class albumClass:
             for f in self.reject_fields:
                 x.pop(f, None)
 
-        # Filters the list of albums using an instance of ( playlistClass ) , first by user top genres, then by rejects list
-        playlist = playlistClass(new_albums, self.spotify)
+        # Filters the list of albums using an instance of ( playlistClass ), first by user top genres, then by rejects list
+        playlist = playlistClass(new_albums, self.spotify, self.fiat_file)
 
         # If user choose to filter by his top genres then .... FILTER BY YOUR TOP GENRES ( function filter_by_your_top_genres in playlistClass)
         if filter_by_your_top_genres:

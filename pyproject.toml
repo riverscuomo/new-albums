@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "new-albums"
+version = "0.22.0"
+description = "A python script to update a Spotify playlist every day with all the songs from any significant new albums. It shouldn't include single-only releases."
+authors = ["Rivers Cuomo"]
+license = "GPL-3.0-or-later"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+argparse = "^1.4.0"
+pycountry = "^22.3.5"
+python-dateutil = "^2.8.2"
+python-decouple = "^3.6"
+rich = "^12.5.1"
+spotipy = "^2.20.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

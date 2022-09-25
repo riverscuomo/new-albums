@@ -1,9 +1,23 @@
 [tool.poetry]
 name = "new-albums"
-version = "0.22.0"
+version = "0.26.0"
 description = "A python script to update a Spotify playlist every day with all the songs from any significant new albums. It shouldn't include single-only releases."
 authors = ["Rivers Cuomo"]
 license = "GPL-3.0-or-later"
+readme = "README.md"
+repository = "https://github.com/riverscuomo/new-albums"
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Multimedia :: Sound/Audio"
+    ]
+keywords = [
+    "spotify",
+    "music"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"

@@ -1,5 +1,6 @@
-# These artists will always be rejected from the playlist
+# These genres will always be rejected from the playlist
 reject = [
+    "afro r&b",
     "alternative country",
     "alternative r&b",
     "ccm",
@@ -7,6 +8,7 @@ reject = [
     "christian",
     "corrido",
     "funk",
+    "indie r&b",
     "latin",
     "venezolano",
     "reggaeton",
@@ -19,7 +21,7 @@ reject = [
     "r&b",
 ]
 
-# These artists will always be added to the playlist
+# These artists will always be allowed into the playlist
 accept = [
     "Kodak Black",
     "Kanye West",

@@ -106,6 +106,7 @@ class playlistClass:
 
             if not in_my_top:
                 # If it's not in my top append to rejected_by_my_top
+                logging.info(f"[playlistClass::filter_by_your_top_genres] Rejected by top genres - {album}")
                 self.rejected_by_my_top.append(album)
 
         # Remove duplicates , function unique in toolsClass.py

@@ -1,6 +1,6 @@
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
-from new_albums.classes.albumClass import albumClass
+from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
 from rich import print
 import new_albums
@@ -84,7 +84,7 @@ def markets(spotify):
     -------
     None
     """
-    logging.debug("[markets]: Retrieving available markets.")
+    logging.info("[markets]: Retrieving available markets.")
     available_countries = spotify.available_markets()["markets"]
 
     log("Spotify is available in...")
@@ -203,7 +203,7 @@ def main():
     init_fiat(args)
     filter_by_genre = args.top_genres
 
-    logging.debug("[main] Creating Spotipy instance.")
+    logging.info("[main] Creating Spotipy instance.")
 
     try:
         spotify = get_spotify()
@@ -225,7 +225,7 @@ def main():
     track_ids = []
 
     for album_id in [x["id"] for x in processed_albums.accepted]:
-        # print(album_id)
+        logging.debug(f"[main] Album id - {album_id}")
         track_ids.extend(album.get_track_ids_for_album(album_id))
 
     track_id_lists = []
@@ -246,22 +246,19 @@ def main():
     log("ACCEPTED")
 
     for album in processed_albums.accepted:
-        print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
+        print(f"+ {format_album(album)}")
 
     if filter_by_genre:
         log("REJECTED BECAUSE OF MY TOP GENRE LIST")
         for album in processed_albums.rejected_by_my_top:
-            print(
-                f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
-            )
+            print(f"+ {format_album(album)}")
 
     log("REJECTED BY GENRE FIAT")
     for album in processed_albums.rejected_by_genre:
-        print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
+        print(f"+ {format_album(album)}")
 
     # Sending to spotify
-    print("=============================================")
-    print(f"updating spotify playlist for {config.SPOTIFY_USER}...")
+    log(f"updating spotify playlist for {config.SPOTIFY_USER}...")
 
     # empty playlist first
     result = spotify.user_playlist_replace_tracks(
@@ -290,7 +287,7 @@ def main():
         f"Feel free to change your always accepted artists and always rejected genres in {config.FIAT_FILE} and run again."
     )
 
-    return f"Success! {description}"
+    logging.info(f"Success! {description}")
 
 
 if __name__ == "__main__":

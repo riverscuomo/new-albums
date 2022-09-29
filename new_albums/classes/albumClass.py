@@ -1,5 +1,21 @@
+import logging
 from .playlistClass import playlistClass
 from new_albums.config import FIAT_FILE
+
+def format_album(album):
+    """Format a Spotipy album dict into a printable string.
+
+    Parameters
+    ----------
+    album : dict[str, str | list[str] | list[dict[str, str, list[str]]]]
+        Spotipy album dictionary.
+
+    Returns
+    -------
+    str
+        Formatted string.
+    """
+    return f"{album['name']} {album['genres']} | {album['artists'][0]['name']}"
 
 
 class albumClass:
@@ -44,8 +60,10 @@ class albumClass:
 
         # If user choose to filter by his top genres then .... FILTER BY YOUR TOP GENRES ( function filter_by_your_top_genres in playlistClass)
         if filter_by_your_top_genres:
+            logging.info("[albumClass::get_new_album_ids] Filtering by top genres")
             playlist.filter_by_your_top_genres(new_albums)
 
+        logging.info("[albumClass::get_new_albums_ids] Filtering by fiat")
         playlist.filter_by_fiat(new_albums)
 
         return playlist
@@ -54,7 +72,7 @@ class albumClass:
         """
         Get the track ids for a single album.
         """
-        # print(f"getting track ids for album {album_id}")
+        logging.debug(f"[albumClass::get_new_album_ids] Getting track ids for album {album_id}")
         album = self.spotify.album(album_id)
 
         # print(track_ids)

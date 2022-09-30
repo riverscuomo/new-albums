@@ -1,12 +1,17 @@
-# These artists will always be rejected from the playlist
+# These genres will always be rejected from the playlist
 reject = [
+    "afro r&b",
     "alternative country",
     "alternative r&b",
+    "arkansas country",
     "ccm",
     "chicago drill",
     "christian",
     "corrido",
+    "electro latino",
     "funk",
+    "indie r&b",
+    "kentucky indie",
     "latin",
     "venezolano",
     "reggaeton",
@@ -19,10 +24,12 @@ reject = [
     "r&b",
 ]
 
-# These artists will always be added to the playlist
+# These artists will always be allowed into the playlist
 accept = [
+    "Bad Bunny",
     "Kodak Black",
     "Kanye West",
+    "Kid Cudi",
     "Doja Cat",
     "Kendrick Lamar",
     "Cardi B",

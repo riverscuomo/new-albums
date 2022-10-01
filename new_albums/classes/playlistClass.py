@@ -12,6 +12,32 @@ from new_albums.config import FIAT_FILE
 
 
 class playlistClass:
+    """Pending playlist changes.
+
+    Parameters
+    ----------
+    playlistId : str
+        Spotify playlist ID as a URI, URL, or base 64 number.
+    spotify : spotipy.client.Spotify
+        Authenicated Spotipy client.
+    fiat_file : str
+        Fiat file module name. Defaults to `_default_fiat`.
+
+    Attributes
+    ----------
+    spotify : spotipy.client.Spotify
+        Authenicated Spotipy client.
+    accept : list[str]
+        Artists to accept from the fiat file.
+    reject : list[str]
+        Genres to reject from the fiat file.
+    accepted : list[dict[str, str | list[str]]]
+        Albums accepted by the filters.
+    rejected_by_genre : list[dict[str, str | list[str]]]
+        Albums rejected by the fiat file.
+    rejected_by_my_top : list[dict[str, str | list[str]]]
+        Albums rejected by the artist's genres being precluded by the fiat file.
+    """
     def __init__(self, playlistId, spotify, fiat_file=FIAT_FILE):
         # Init elements #
         self.spotify = spotify
@@ -68,7 +94,7 @@ class playlistClass:
                 any(element in self.reject for element in [artist.genres[0]])
                 and artist.name not in self.accept
             ):
-                # print(f"Rejected by fiat: {artist.name}")
+                logging.info(f"[playlistClass::filter_by_fiat] Rejected by fiat: {artist.name}")
                 self.rejected_by_genre.append(album)
 
             else:

@@ -3,9 +3,9 @@ class artistClass:
 
     Parameters
     ----------
-    artist_id : int | str
-        Artist ID as an int or URI.
-    spotify : spotipy.client.Spotipy
+    artist_id : str
+        Artist ID as a URI, URL, or base 64 number.
+    spotify : spotipy.client.Spotify
         Spotipy client instance.
 
     Attributes

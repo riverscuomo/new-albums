@@ -19,6 +19,25 @@ def format_album(album):
 
 
 class albumClass:
+    """Helper class to process albums.
+
+    Parameters
+    ----------
+    spotify : spotipy.client.Spotify
+        Authenicated Spotify client.
+    fiat_file : str
+        Fiat file module name. Defaults to `_default_fiat.py`.
+
+    Attributes
+    ----------
+    spotify : spotipy.client.Spotify
+        Authenicated Spotify client.
+    fiat_file : str
+        Fiat file module name.
+    reject_fields : list[str]
+        Album keys that aren't important to the script.
+    """
+
     def __init__(self, spotify, fiat_file=FIAT_FILE):
         # Init elements #
         self.spotify = spotify

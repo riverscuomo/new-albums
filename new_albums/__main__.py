@@ -31,7 +31,14 @@ def log(message):
     print("=============================================")
 
 
-def create_parser() -> argparse.ArgumentParser:
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments.
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments.
+    """
     parser = argparse.ArgumentParser(
         description="Update a Spotify playlist with new songs from any significant albums.",
         epilog="Check README.md for help setting up the required environment variables.",
@@ -66,7 +73,24 @@ def create_parser() -> argparse.ArgumentParser:
         default="warning",
     )
 
-    return parser
+    parser.add_argument(
+        "--limit",
+        "-m",
+        help="Number of new releases to return. Default: 20 Max: 50",
+        default=20,
+        type=int
+    )
+
+    # Parse and validate arguments
+    args = parser.parse_args()
+    init_logging(args.log)
+    init_fiat(args)
+
+    if args.limit > 50 or args.limit <= 0:
+        logging.critical(f"[parse_arguments] Invalid limit: {args.limit}")
+        raise ValueError(f"--limit should be between 1 and 50 inclusive. Got: {args.limit}.")
+
+    return args
 
 
 def markets(spotify):
@@ -173,7 +197,7 @@ def init_fiat(args):
     """
     logging.debug(f"[init_fiat] Fiat argument: {args.fiat}")
 
-    if args.fiat is not None:
+    if args.fiat:
         logging.info(f"[init_fiat] Using {args.fiat} as a fiat file.")
 
         # Logic is a bit hacky.
@@ -197,10 +221,7 @@ def main():
     logging.debug(sys.argv)
 
     # Setup and parse arguments
-    parser = create_parser()
-    args = parser.parse_args()
-    init_logging(args.log)
-    init_fiat(args)
+    args = parse_arguments()
     filter_by_genre = args.top_genres
 
     logging.info("[main] Creating Spotipy instance.")
@@ -215,7 +236,7 @@ def main():
     # Calls the Spotify API and therefore requires authentication
     country = parse_country(args.country.upper(), spotify)
 
-    album = albumClass(spotify, config.FIAT_FILE)
+    album = albumClass(spotify, config.FIAT_FILE, args.limit)
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(

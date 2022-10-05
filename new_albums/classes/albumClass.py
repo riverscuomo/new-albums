@@ -27,6 +27,8 @@ class albumClass:
         Authenicated Spotify client.
     fiat_file : str
         Fiat file module name. Defaults to `_default_fiat.py`.
+    limit : int
+        Amount of new releases to pull.
 
     Attributes
     ----------
@@ -34,14 +36,17 @@ class albumClass:
         Authenicated Spotify client.
     fiat_file : str
         Fiat file module name.
+    limit : int
+        Amount of new releases to pull.
     reject_fields : list[str]
         Album keys that aren't important to the script.
     """
 
-    def __init__(self, spotify, fiat_file=FIAT_FILE):
+    def __init__(self, spotify, fiat_file=FIAT_FILE, limit=20):
         # Init elements #
         self.spotify = spotify
         self.fiat_file = fiat_file
+        self.limit = limit
         self.reject_fields = [
             "available_markets",
             "external_urls",
@@ -53,14 +58,14 @@ class albumClass:
             "type",
         ]
 
-    def get_new_album_ids(self,  filter_by_your_top_genres, country=None, limit=20):
+    def get_new_album_ids(self, filter_by_your_top_genres, country=None):
         """
         Get all the album ids from the last x new albums.
         It doesn't include single-only releases OR any genres you've marked as reject.
         """
 
         # If country is defined, it filter by country otherwise will search worldwide
-        new = self.spotify.new_releases(limit=limit, country=country.upper() if country is not None else country )[
+        new = self.spotify.new_releases(limit=self.limit, country=country.upper() if country is not None else country )[
             "albums"
         ]["items"]
 

@@ -78,7 +78,15 @@ def parse_arguments() -> argparse.Namespace:
         "-m",
         help="Number of new releases to return. Default: 20 Max: 50",
         default=20,
-        type=int
+        type=int,
+    )
+
+    parser.add_argument(
+        "--timeout",
+        "-t",
+        help="Timeout in seconds to wait for responses from Spotify's servers before failing.",
+        default=20,
+        type=int,
     )
 
     # Parse and validate arguments
@@ -88,7 +96,9 @@ def parse_arguments() -> argparse.Namespace:
 
     if args.limit > 50 or args.limit <= 0:
         logging.critical(f"[parse_arguments] Invalid limit: {args.limit}")
-        raise ValueError(f"--limit should be between 1 and 50 inclusive. Got: {args.limit}.")
+        raise ValueError(
+            f"--limit should be between 1 and 50 inclusive. Got: {args.limit}."
+        )
 
     return args
 
@@ -227,9 +237,10 @@ def main():
     logging.info("[main] Creating Spotipy instance.")
 
     try:
-        spotify = get_spotify()
-    except ValueError:
+        spotify = get_spotify(timeout=args.timeout)
+    except Exception as e:
         log("Could not get spotify auth. Exiting")
+        logging.critical(f"Spotipy error:\n{e}")
         sys.exit(1)
 
     # Parse country/markets

@@ -4,12 +4,15 @@ reject = [
     "alternative country",
     "alternative r&b",
     "arkansas country",
+    "atl hip hop",
     "ccm",
     "chicago drill",
+    "chill r&b",
     "christian",
     "corrido",
     "electro latino",
     "funk",
+    "gospel",
     "indie r&b",
     "kentucky indie",
     "latin",
@@ -24,7 +27,7 @@ reject = [
     "r&b",
 ]
 
-# These artists will always be allowed into the playlist
+# These artists will always be allowed into the playlist, regardless of rejected genres
 accept = [
     "Bad Bunny",
     "Kodak Black",

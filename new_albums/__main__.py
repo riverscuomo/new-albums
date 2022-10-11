@@ -1,6 +1,6 @@
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
-from new_albums.classes.albumClass import albumClass
+from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
 from rich import print
 import new_albums
@@ -31,7 +31,14 @@ def log(message):
     print("=============================================")
 
 
-def create_parser() -> argparse.ArgumentParser:
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments.
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed arguments.
+    """
     parser = argparse.ArgumentParser(
         description="Update a Spotify playlist with new songs from any significant albums.",
         epilog="Check README.md for help setting up the required environment variables.",
@@ -66,7 +73,34 @@ def create_parser() -> argparse.ArgumentParser:
         default="warning",
     )
 
-    return parser
+    parser.add_argument(
+        "--limit",
+        "-m",
+        help="Number of new releases to return. Default: 20 Max: 50",
+        default=20,
+        type=int,
+    )
+
+    parser.add_argument(
+        "--timeout",
+        "-t",
+        help="Timeout in seconds to wait for responses from Spotify's servers before failing.",
+        default=20,
+        type=int,
+    )
+
+    # Parse and validate arguments
+    args = parser.parse_args()
+    init_logging(args.log)
+    init_fiat(args)
+
+    if args.limit > 50 or args.limit <= 0:
+        logging.critical(f"[parse_arguments] Invalid limit: {args.limit}")
+        raise ValueError(
+            f"--limit should be between 1 and 50 inclusive. Got: {args.limit}."
+        )
+
+    return args
 
 
 def markets(spotify):
@@ -84,7 +118,7 @@ def markets(spotify):
     -------
     None
     """
-    logging.debug("[markets]: Retrieving available markets.")
+    logging.info("[markets]: Retrieving available markets.")
     available_countries = spotify.available_markets()["markets"]
 
     log("Spotify is available in...")
@@ -173,7 +207,7 @@ def init_fiat(args):
     """
     logging.debug(f"[init_fiat] Fiat argument: {args.fiat}")
 
-    if args.fiat is not None:
+    if args.fiat:
         logging.info(f"[init_fiat] Using {args.fiat} as a fiat file.")
 
         # Logic is a bit hacky.
@@ -197,25 +231,23 @@ def main():
     logging.debug(sys.argv)
 
     # Setup and parse arguments
-    parser = create_parser()
-    args = parser.parse_args()
-    init_logging(args.log)
-    init_fiat(args)
+    args = parse_arguments()
     filter_by_genre = args.top_genres
 
-    logging.debug("[main] Creating Spotipy instance.")
+    logging.info("[main] Creating Spotipy instance.")
 
     try:
-        spotify = get_spotify()
-    except ValueError:
+        spotify = get_spotify(timeout=args.timeout)
+    except Exception as e:
         log("Could not get spotify auth. Exiting")
+        logging.critical(f"Spotipy error:\n{e}")
         sys.exit(1)
 
     # Parse country/markets
     # Calls the Spotify API and therefore requires authentication
     country = parse_country(args.country.upper(), spotify)
 
-    album = albumClass(spotify, config.FIAT_FILE)
+    album = albumClass(spotify, config.FIAT_FILE, args.limit)
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(
@@ -225,7 +257,7 @@ def main():
     track_ids = []
 
     for album_id in [x["id"] for x in processed_albums.accepted]:
-        # print(album_id)
+        logging.debug(f"[main] Album id - {album_id}")
         track_ids.extend(album.get_track_ids_for_album(album_id))
 
     track_id_lists = []
@@ -246,22 +278,19 @@ def main():
     log("ACCEPTED")
 
     for album in processed_albums.accepted:
-        print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
+        print(f"+ {format_album(album)}")
 
     if filter_by_genre:
         log("REJECTED BECAUSE OF MY TOP GENRE LIST")
         for album in processed_albums.rejected_by_my_top:
-            print(
-                f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}"
-            )
+            print(f"+ {format_album(album)}")
 
     log("REJECTED BY GENRE FIAT")
     for album in processed_albums.rejected_by_genre:
-        print(f"+ {album['name']} {album['genres']} | {album['artists'][0]['name']}")
+        print(f"+ {format_album(album)}")
 
     # Sending to spotify
-    print("=============================================")
-    print(f"updating spotify playlist for {config.SPOTIFY_USER}...")
+    log(f"updating spotify playlist for {config.SPOTIFY_USER}...")
 
     # empty playlist first
     result = spotify.user_playlist_replace_tracks(
@@ -290,7 +319,7 @@ def main():
         f"Feel free to change your always accepted artists and always rejected genres in {config.FIAT_FILE} and run again."
     )
 
-    return f"Success! {description}"
+    logging.info(f"Success! {description}")
 
 
 if __name__ == "__main__":

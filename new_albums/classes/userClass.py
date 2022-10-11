@@ -1,6 +1,22 @@
+import logging
 from .toolsClass import toolsClass
 
 class userClass :
+    """Store user's top genres to use in filtering.
+
+    Parameters
+    ----------
+    spotify : spotipy.client.Spotify
+        Authenicated Spotify client.
+
+    Attributes
+    ----------
+    spotify : spotipy.client.Spotify
+        Authenicated Spotify client.
+
+    genres : list[str]
+        User's top genres.
+    """
 
     def __init__(self,spotify):
         # Init elements #
@@ -24,3 +40,5 @@ class userClass :
 
         # Remove duplicates , function unique in toolsClass.py
         self.genres=toolsClass.unique(self.genres)
+
+        logging.debug(f"[userClass::set_user_top_genres] User's top genres: {self.genres}")

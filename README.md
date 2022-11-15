@@ -103,7 +103,7 @@ poetry install
 
 ### Local development
 
-The package can be installed in develop mode to allow you to make changes locally.
+The package can be installed in developement (editable) mode to allow you to make changes locally.
 
 Traditional:
 
@@ -111,7 +111,7 @@ Traditional:
 pip install . develop`
 ```
 
-Poetry automatically installs dependencies in develop mode.
+Poetry automatically installs dependencies in development mode.
 
 ## Running
 
@@ -146,3 +146,52 @@ By default, the script will filter by US. To filter by a specific country, you c
 By default, the script will not filter by top genres. To enable this filter, you can pass the `--top-genres` flag, e.g. `py -m new_albums --top-genres`
 
 `-g` can also be used as an abbreviation for `--top-genres`, e.g. `py -m new_albums -g`
+
+### Specify an fiat file
+
+`New Albums` defaults to using `_default_fiat` as a fiat file. The option `--fiat` or `-f` for short allows using an alternative fiat file.
+
+For example, to run `New Albums` with `prog_fiat` as a fiat file:
+
+```shell
+poetry run python -m new_albums -f prog_fiat
+```
+
+Or:
+```shell
+py -m new_albums -f prog_fiat
+```
+
+### Logging granularity
+
+The `--log` or `-l` argument can be used to specify the logging level.
+
+**Valid levels:**
+
+* debug
+* info
+* warning
+* critical
+* error
+
+Usage:
+
+```shell
+poetry run python -m new_albums -l critical
+```
+
+### Limit releases
+
+Use the `--limit` or `-m` argument if you'd like to limit the amount of new releases returned. Defaults to 20 and must be > 0 or <= 50.
+
+```shell
+poetry run python -m new_albums -m 50
+```
+
+### Timeout
+
+`--timeout` or `-t` sets the amount of seconds to wait for a response before failing. Defaults to 20.
+
+```shell
+poetry run python -m new_albums -t 5
+```

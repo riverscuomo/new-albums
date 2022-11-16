@@ -131,13 +131,14 @@ poetry run python -m new_albums
 
 ### Filter by country
 
-By default, the script will filter by US. To filter by a specific country, you can pass the `--country` flag followed by the country ISO code, e.g. `py -m new_albums --country JP`
+By default, the script will only pull new releases from the United States. To filter by specific countries, you can pass the `--country` flag followed by one or more country ISO codes, e.g. `py -m new_albums --country JP`
 
 **Options**:
 - `py -m new_albums`: filters by US
+- `py -m new_albums -c us jp`: filters by US and JP
 - `py -m new_albums --country GB`: filter by GB
-- `py -m new_albums --country list`: list all available Spotify country codes. The script then prompts you to type an ISO code.
-- `py -m new_albums --country all`: include -m new_albums codes (worldwide)
+- `py -m new_albums --country list`: list all available Spotify country codes.
+- `py -m new_albums --country all`: worldwide
 
 `-c` can also be used as an abbreviation for `--country`, e.g. `py -m new_albums -c all`
 

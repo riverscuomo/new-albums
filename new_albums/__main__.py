@@ -72,7 +72,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--log",
         "-l",
-        help="Set logging granularity. One of: debug, info, warning, error, critical",
+        help="Set logging granularity. Defaults to 'warning'.",
+        choices=["debug", "info", "warning", "error", "critical"],
         default="warning",
     )
 
@@ -132,7 +133,7 @@ def markets(spotify):
             print(country_name + " = " + "'" + code + "'")
 
     log(
-        "Rerun the script with the desired country code; ex. 'US', 'GB', 'JP', 'ES'... "
+        "Rerun the script with the desired country codes; ex. 'US', 'GB', 'JP', 'ES'... "
     )
 
 
@@ -153,11 +154,11 @@ def parse_country(countries, spotify):
     """
     logging.debug(f"[parse_country]: Parsing country arguments: {countries}")
 
-    if countries == ["ALL"]:
+    if "ALL" in countries:
         # ALL is worldwide (None)
         logging.info(f"[parse_country] Global country filter")
         return [None]
-    elif countries == ["LIST"]:
+    elif "LIST" in countries:
         logging.debug("[parse_country]: Asked for list countries.")
         markets(spotify)
         sys.exit(0)

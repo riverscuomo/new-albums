@@ -1,6 +1,8 @@
 import logging
+import itertools
 from .playlistClass import playlistClass
 from new_albums.config import FIAT_FILE
+
 
 def format_album(album):
     """Format a Spotipy album dict into a printable string.
@@ -58,18 +60,31 @@ class albumClass:
             "type",
         ]
 
-    def get_new_album_ids(self, filter_by_your_top_genres, country=None):
+    def get_new_album_ids(self, filter_by_your_top_genres, countries):
         """
         Get all the album ids from the last x new albums.
         It doesn't include single-only releases OR any genres you've marked as reject.
         """
 
-        # If country is defined, it filter by country otherwise will search worldwide
-        new = self.spotify.new_releases(limit=self.limit, country=country.upper() if country is not None else country )[
-            "albums"
-        ]["items"]
+        logging.debug(f"[get_new_album_ids]: countries = {countries}")
+        # Clean up countries by ensuring they're uppercased
+        # countries = (country.upper() for country in countries) if countries else ["US"]
 
-        new.sort(key=lambda x: x["release_date"], reverse=True)
+        # Pull new albums and filter on each country
+        new = (
+            self.spotify.new_releases(limit=self.limit, country=country)["albums"][
+                "items"
+            ]
+            for country in countries
+        )
+
+        # Flatten new because it's currently a list of lists
+        new = itertools.chain.from_iterable(new)
+
+        # Consume the generators and sort by release date
+        new = sorted(new, key=lambda x: x["release_date"], reverse=True)
+
+        logging.debug(f"[get_new_albums_ids]: new = {new}")
 
         # Remove any albums that are single-only
         new_albums = [x for x in new if x["album_type"] == "album"]
@@ -96,7 +111,9 @@ class albumClass:
         """
         Get the track ids for a single album.
         """
-        logging.debug(f"[albumClass::get_new_album_ids] Getting track ids for album {album_id}")
+        logging.debug(
+            f"[albumClass::get_new_album_ids] Getting track ids for album {album_id}"
+        )
         album = self.spotify.album(album_id)
 
         # print(track_ids)

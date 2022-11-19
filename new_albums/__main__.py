@@ -3,6 +3,7 @@ from new_albums.api import get_spotify
 from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
 from rich import print
+from typing import Iterable
 import new_albums
 import new_albums.config as config
 import os
@@ -47,8 +48,10 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "-c",
         "--country",
-        help="Allows you to filter by country using an ISO country code. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.",
-        default="US",
+        help="Filter by one or more countries using ISO country codes. Default is 'US'. Use 'ALL' for worldwide. Use 'LIST' to list all available countries.",
+        nargs="+",
+        type=str,
+        default=["US"],
     )
 
     # a boolean kwarg should really just be optional and default to bools in memory, not strings
@@ -69,7 +72,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--log",
         "-l",
-        help="Set logging granularity. One of: debug, info, warning, error, critical",
+        help="Set logging granularity. Defaults to 'warning'.",
+        choices=["debug", "info", "warning", "error", "critical"],
         default="warning",
     )
 
@@ -129,17 +133,17 @@ def markets(spotify):
             print(country_name + " = " + "'" + code + "'")
 
     log(
-        "Rerun the script with the desired country code; ex. 'US', 'GB', 'JP', 'ES'... "
+        "Rerun the script with the desired country codes; ex. 'US', 'GB', 'JP', 'ES'... "
     )
 
 
-def parse_country(country, spotify):
+def parse_country(countries, spotify):
     """Validate the country code argument.
 
     Parameters
     ----------
-    country : str
-        The country code passed into the script.
+    countries : str | list[str]
+        The country code(s) passed into the script.
     spotify : spotipy.client.Spotipy
         Authenicated Spotipy client.
 
@@ -148,22 +152,31 @@ def parse_country(country, spotify):
     str
         Validated country code.
     """
-    logging.debug(f"[parse_country]: Parsing country code: {country}")
+    logging.debug(f"[parse_country]: Parsing country arguments: {countries}")
 
-    if country == "ALL":
+    if "ALL" in countries:
         # ALL is worldwide (None)
         logging.info(f"[parse_country] Global country filter")
-        return None
-    elif country == "LIST":
+        return [None]
+    elif "LIST" in countries:
+        logging.debug("[parse_country]: Asked for list countries.")
         markets(spotify)
         sys.exit(0)
-    elif country in spotify.available_markets()["markets"]:
-        logging.info(f"[parse_country] Filtering on country code {country}.")
-        return country
+    elif isinstance(countries, Iterable):
+        logging.debug("[parse_country]: Validating list of countries")
+        all_markets = spotify.available_markets()["markets"]
+        for country in countries:
+            if country in all_markets:
+                logging.info(f"[parse_country] Filtering on country code {country}.")
+            else:
+                logging.error(f"[parse_country] Invalid country code {country}.")
+                raise ValueError(
+                    f"Country code {country} is invalid.\nRun the scripts with `-c list` to see the available markets."
+                )
+
+        return countries
     else:
-        raise ValueError(
-            f"Country code {country} is invalid.\nRun the scripts with `-c list` to see the available markets."
-        )
+        raise ValueError(f"Invalid option passed to -c: {countries}")
 
 
 def init_logging(log_level):
@@ -245,13 +258,16 @@ def main():
 
     # Parse country/markets
     # Calls the Spotify API and therefore requires authentication
-    country = parse_country(args.country.upper(), spotify)
+    countries = [country.upper() for country in args.country]
+    logging.debug(f"[main] Countries after upper: {countries}")
+    countries = parse_country(countries, spotify)
+    logging.debug(f"[main] Countries after parse_country: {countries}")
 
     album = albumClass(spotify, config.FIAT_FILE, args.limit)
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(
-        country=country, filter_by_your_top_genres=filter_by_genre
+        countries=countries, filter_by_your_top_genres=filter_by_genre
     )
 
     track_ids = []

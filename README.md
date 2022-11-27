@@ -108,7 +108,7 @@ The package can be installed in developement (editable) mode to allow you to mak
 Traditional:
 
 ```shell
-pip install . develop`
+pip install -e .
 ```
 
 Poetry automatically installs dependencies in development mode.

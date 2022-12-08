@@ -150,6 +150,9 @@ def get_list_from_file(filename):
     """
     get a list of strings from a text file
     """
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-    return [line.strip() for line in lines]
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+        return [line.strip() for line in lines]
+    except FileNotFoundError as e:
+        return []

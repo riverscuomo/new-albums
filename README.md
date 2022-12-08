@@ -35,8 +35,6 @@ The following environment variables are mandatory:
 
 A redirect URI may be set with the optional envvar `SPOTIFY_REDIRECT_URI` - this defaults to `https://localhost:8080` if unset.
 
-`FIAT_FILE` may be set to a file name containing genre overrides.
-
 #### .env
 
 The recommended way for setting these environmental variables is to use a `.env` file.
@@ -75,9 +73,13 @@ Note that there is a space before the first export.  This is intentional and sho
 To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
 
 ### Set which genres to Reject
-By default, the genres specified in `new_albums._default_fiat` is used to filter genres.  You can add a custom fiat file in the `new_albums` folder and specify the name in your `.env` file using the `FIAT_FILE` variable **or** with the `--fiat` argument.
+You can add a custom "reject.txt" file in the `new_albums` folder.
 
 The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
+
+### Set which genres to Accept regardless of Genre rejects
+You can add a custom "accept.txt" file in the `new_albums` folder.
+
 
 ### Create a Virtual Environment (optional)
 
@@ -128,6 +130,11 @@ Poetry:
 ```shell
 poetry run python -m new_albums
 ```
+
+### Add to rejects.txt or accept.txt with command line args
+
+- `py -m new_albums -r "florida rap"`: will reject any album with the primary artist's first genre as "atlanta rap"
+- `py -m new_albums -r "Kodak Black"`: will add any album by the artist's even if their first genre is in your reject list
 
 ### Filter by country
 

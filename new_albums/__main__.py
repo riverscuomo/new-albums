@@ -4,16 +4,16 @@ from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
 from rich import print
 from typing import Iterable
-import new_albums
+# import new_albums
 import new_albums.config as config
 import os
 import importlib
 import pycountry
 import argparse
 import sys
-import spotipy
+# import spotipy
 import logging
-import _default_fiat
+
 
 
 def log(message):

@@ -42,8 +42,8 @@ class playlistClass:
         # Init elements #
         self.spotify = spotify
 
-        self.accept  = self.get_accepted_rejected_from_fiat_file("accept")
-        self.reject = self.get_accepted_rejected_from_fiat_file("reject")
+        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file()
+
 
         self.accepted = []
         self.rejected_by_genre = []
@@ -51,9 +51,9 @@ class playlistClass:
 
 
 
-    def get_accepted_rejected_from_fiat_file(self, fiat_file: str) -> Tuple[List[str], List[str]]:
+    def get_accepted_rejected_from_fiat_file(self, ) -> Tuple[List[str], List[str]]:
         # Parse the accepted / rejected from a Python fiat file
-        logging.debug(f"[playListClass]: Fiat file gut check: {fiat_file}")
+        # logging.debug(f"[playListClass]: Fiat file gut check: {fiat_file}")
         # accept = ["test accept"]
         # reject = ["test reject"]
         

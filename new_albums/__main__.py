@@ -13,6 +13,7 @@ import argparse
 import sys
 import spotipy
 import logging
+import _default_fiat
 
 
 def log(message):
@@ -43,6 +44,22 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Update a Spotify playlist with new songs from any significant albums.",
         epilog="Check README.md for help setting up the required environment variables.",
+    )
+
+    parser.add_argument(
+        "-a",
+        "--accept-artist",
+        help="And artist to your accept list.",
+        # nargs="+",
+        type=str,
+    )
+
+    parser.add_argument(
+        "-r",
+        "--reject-genre",
+        help="And genres to your reject list.",
+        # nargs="+",
+        type=str,
     )
 
     parser.add_argument(
@@ -232,6 +249,14 @@ def init_fiat(args):
         importlib.reload(config)
 
 
+def add_to_file(filepath, string):
+    with open(filepath, "r") as f:
+        lines = f.readlines()
+        lines.append(f"{string}\n")
+        lines.sort()
+    with open(filepath, "w") as f:
+        f.writelines(lines)
+
 def main():
     # FOR RIVERS ONLY:
     # Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
@@ -245,6 +270,15 @@ def main():
 
     # Setup and parse arguments
     args = parse_arguments()
+
+    # print(args)
+
+    if args.reject_genre:
+        add_to_file(r".\new_albums\reject.txt", args.reject_genre)
+    if args.accept_artist:
+        add_to_file(r".\new_albums\accept.txt", args.accept_artist)
+
+
     filter_by_genre = args.top_genres
 
     logging.info("[main] Creating Spotipy instance.")

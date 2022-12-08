@@ -42,40 +42,48 @@ class playlistClass:
         # Init elements #
         self.spotify = spotify
 
-        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(fiat_file)
+        self.accept  = self.get_accepted_rejected_from_fiat_file("accept")
+        self.reject = self.get_accepted_rejected_from_fiat_file("reject")
 
         self.accepted = []
         self.rejected_by_genre = []
         self.rejected_by_my_top = []
 
+
+
     def get_accepted_rejected_from_fiat_file(self, fiat_file: str) -> Tuple[List[str], List[str]]:
         # Parse the accepted / rejected from a Python fiat file
         logging.debug(f"[playListClass]: Fiat file gut check: {fiat_file}")
-        try:
-            mod = import_module("."+fiat_file, package="new_albums")
-        except ModuleNotFoundError as e:
-            logging.critical(f"[playListClass]: Error importing from fiat file: {fiat_file} - {e}")
-            raise e
+        # accept = ["test accept"]
+        # reject = ["test reject"]
+        
+        accept = get_list_from_file(r".\new_albums\accept.txt")
+        reject = get_list_from_file(r".\new_albums\reject.txt")
+        # try:
+        #     mod = import_module("."+fiat_file, package="new_albums")
+        # except ModuleNotFoundError as e:
+        #     logging.critical(f"[playListClass]: Error importing from fiat file: {fiat_file} - {e}")
+        #     raise e
 
-        # Check that the imported module has the expected attributes: reject, accept
-        for item in ('accept', 'reject'):
-            if not hasattr(mod, item):
-                logging.critical(f"[playListClass]: {item} not found in {fiat_file}.\nYour fiat file should have two lists: `accept` and `reject`.")
-                raise ValueError(f"Cannot find {item} list in fiat file")
+        # # Check that the imported module has the expected attributes: reject, accept
+        # for item in ('accept', 'reject'):
+        #     if not hasattr(mod, item):
+        #         logging.critical(f"[playListClass]: {item} not found in {fiat_file}.\nYour fiat file should have two lists: `accept` and `reject`.")
+        #         raise ValueError(f"Cannot find {item} list in fiat file")
 
-        # Check that accept and reject are list.
-        if not isinstance(mod.accept, list) or not isinstance(mod.reject, list):
-            logging.critical("[playListClass]: `accept` or `reject` is not a list.")
-            logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
-            raise TypeError("In your fiat file, `accept` and `reject` should be lists of strings.")
+        # # Check that accept and reject are list.
+        # if not isinstance(mod.accept, list) or not isinstance(mod.reject, list):
+        #     logging.critical("[playListClass]: `accept` or `reject` is not a list.")
+        #     logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
+        #     raise TypeError("In your fiat file, `accept` and `reject` should be lists of strings.")
 
-        # Check that accept and reject only consist of strings.
-        if not all(map(lambda x: isinstance(x, str), mod.accept + mod.reject)):
-            logging.critical("[playListClass]: `accept` or `reject` doesn't consist only of strings.")
-            logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
-            raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
+        # # Check that accept and reject only consist of strings.
+        # if not all(map(lambda x: isinstance(x, str), mod.accept + mod.reject)):
+        #     logging.critical("[playListClass]: `accept` or `reject` doesn't consist only of strings.")
+        #     logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
+        #     raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
 
-        return mod.accept, mod.reject
+        return accept, reject
 
     def filter_by_fiat(self, new_albums):
         """
@@ -137,3 +145,11 @@ class playlistClass:
 
         # Remove duplicates , function unique in toolsClass.py
         return toolsClass.unique(albums)
+
+def get_list_from_file(filename):
+    """
+    get a list of strings from a text file
+    """
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+    return [line.strip() for line in lines]

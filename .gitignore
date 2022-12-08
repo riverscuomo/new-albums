@@ -1,3 +1,6 @@
+accept.txt
+reject.txt
+
 # Spotipy's token cache file
 .cache-*
 

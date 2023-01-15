@@ -1,3 +1,4 @@
+"""Helper functions to find accept.txt and reject.txt."""
 import inspect
 import os
 import logging
@@ -10,6 +11,13 @@ import config
 
 
 def accept_reject_path() -> Optional[Path]:
+    """Retrieve path containing accept.txt/reject.txt with a preference for XDG_HOME.
+
+    Returns
+    -------
+    Optional[Path]
+        Path to configs if existing.
+    """
     logging.info(
         "[accept_reject]: Attempting to find accept.txt and/or reject.txt if they exist."
     )
@@ -17,6 +25,13 @@ def accept_reject_path() -> Optional[Path]:
 
 
 def config_home_check() -> Optional[Path]:
+    """Check XDG_CONFIG_HOME or APPDATA for the `new_albums` config folder and accept/reject.txt.
+
+    Returns
+    -------
+    Optional[Path]
+        Path to folder if it contains accept.txt/reject.txt.
+    """
     logging.info("[accept_reject]: Checking XDG_CONFIG_HOME or APPDATA for configs.")
 
     config_home: Optional[str] = os.environ.get("XDG_CONFIG_HOME") or os.environ.get(
@@ -33,10 +48,19 @@ def config_home_check() -> Optional[Path]:
 
 
 def module_path_check() -> Optional[Path]:
+    """Check new_albums' module path for accept.txt and/or reject.txt.
+
+    Returns
+    -------
+    Optional[Path]
+        Possible accept.txt/reject.txt path.
+    """
     logging.info(
         "[accept_reject]: Checking the `new_albums` module path for accept.txt and/or reject.txt if they exist."
     )
 
+    # Finicky logic here. I'm using inspect to get the module path for `config`.
+    # Therefore, this breaks if `config` is ever removed or renamed.
     module_path: Path = Path(inspect.getfile(config)).parent
     logging.info(f"[accept_reject]: Module path => {module_path}")
 
@@ -58,7 +82,6 @@ def check_accept_reject_exists(path: Path) -> bool:
     -------
     bool
     """
-
     # The user may provide neither, one, or both files.
     # TODO: Use filter to return the paths instead of repeating work.
     return any(

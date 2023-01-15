@@ -43,8 +43,7 @@ class playlistClass:
     def __init__(self, playlistId, spotify, conf_dir=None):
         # Init elements #
         self.spotify = spotify
-        logging.error("NOTE TO SELF: CHANGE THIS CODE")
-        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(None)
+        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(conf_dir)
         self.accepted = []
         self.rejected_by_genre = []
         self.rejected_by_my_top = []
@@ -66,7 +65,7 @@ class playlistClass:
             reject = get_list_from_file(conf_dir.joinpath("reject.txt"))
             return accept, reject
         else:
-            logging.info("[playListClass]: Not using accept.txt / reject.txt")
+            logging.warn("[playListClass]: Not using accept.txt / reject.txt")
             return [], []
         # try:
         #     mod = import_module("."+fiat_file, package="new_albums")
@@ -93,9 +92,7 @@ class playlistClass:
         #     raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
 
     def filter_by_fiat(self, new_albums):
-        """
-        Remove any albums whose first artist's first genre is in reject
-        """
+        """Remove any albums whose first artist's first genre is in reject."""
         albums = []
         for album in new_albums:
 
@@ -123,9 +120,7 @@ class playlistClass:
         return toolsClass.unique(albums)
 
     def filter_by_your_top_genres(self, new_albums):
-        """
-        Remove any albums that is not in your top genres
-        """
+        """Remove any albums that is not in your top genres."""
         # Get current user top genres using an instance of userClass ( userClass.py )
         user = userClass(self.spotify)
         user.set_user_top_genres()
@@ -159,9 +154,7 @@ class playlistClass:
 
 
 def get_list_from_file(filename):
-    """
-    get a list of strings from a text file
-    """
+    """Get a list of strings from a text file."""
     try:
         with open(filename, "r") as f:
             lines = f.readlines()

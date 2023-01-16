@@ -2,8 +2,8 @@
 
 import logging
 import itertools
-from .playlistClass import playlistClass
-from new_albums.config import FIAT_FILE
+from classes.playlistClass import playlistClass
+# from new_albums.config import FIAT_FILE
 
 
 def format_album(album):
@@ -29,8 +29,8 @@ class albumClass:
     ----------
     spotify : spotipy.client.Spotify
         Authenicated Spotify client.
-    fiat_path : str
-        Fiat files path names. Defaults to the module path.
+    fiat_path : Optional[pathlib.Path]
+        Path to directory containing accept.txt/reject.txt. Optional.
     limit : int
         Amount of new releases to pull.
 
@@ -38,15 +38,15 @@ class albumClass:
     ----------
     spotify : spotipy.client.Spotify
         Authenicated Spotify client.
-    fiat_file : str
-        Fiat file path.
+    fiat_path : Optional[pathlib.Path]
+        Directory containing accept.txt/reject.txt.
     limit : int
         Amount of new releases to pull.
     reject_fields : list[str]
         Album keys that aren't important to the script.
     """
 
-    def __init__(self, spotify, fiat_path=FIAT_FILE, limit=20):
+    def __init__(self, spotify, fiat_path=None, limit=20):
         # Init elements #
         self.spotify = spotify
         self.fiat_path = fiat_path

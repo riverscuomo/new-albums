@@ -5,10 +5,10 @@ import logging
 
 from rich import print
 
-from .artistClass import artistClass
-from .userClass import userClass
-from .toolsClass import toolsClass
-from classes.accept_reject import accept_reject_path
+from new_albums.accept_reject import accept_reject_path
+from new_albums.classes.artistClass import artistClass
+from new_albums.classes.userClass import userClass
+from new_albums.classes.toolsClass import toolsClass
 
 
 class playlistClass:
@@ -20,7 +20,7 @@ class playlistClass:
         Spotify playlist ID as a URI, URL, or base 64 number.
     spotify : spotipy.client.Spotify
         Authenicated Spotipy client.
-    conf_dir : Optional[str | pathlib.Path]
+    conf_dir : Optional[pathlib.Path]
         Path to configuration directory containing "accept.txt" and/or "reject.txt".
         Defaults to XDG_CONFIG_HOME for Unix or APPHOME for Windows.
 

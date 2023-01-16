@@ -5,13 +5,14 @@ import argparse
 import sys
 import logging
 import new_albums.config as config
+from rich import print
+from typing import Iterable
+from pathlib import Path
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
 from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
-from new_albums.classes.accept_reject import check_accept_reject_exists
-from rich import print
-from typing import Iterable
+from new_albums.accept_reject import check_accept_reject_exists
 
 
 def log(message):
@@ -113,6 +114,7 @@ def parse_arguments() -> argparse.Namespace:
     init_logging(args.log)
     # init_fiat(args)
     if args.fiat:
+        args.fiat = Path(args.fiat)
         init_accept_reject(args)
 
     if args.limit > 50 or args.limit <= 0:
@@ -394,7 +396,7 @@ def main():
 
     print("Done!")
     print(
-        f"Feel free to change your always accepted artists and always rejected genres in {config.FIAT_FILE} and run again."
+        "Feel free to change your always accepted artists and always rejected genres in `accept.txt` and `reject.txt` and run again."
     )
 
     logging.info(f"Success! {description}")

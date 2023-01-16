@@ -73,12 +73,18 @@ Note that there is a space before the first export.  This is intentional and sho
 To view all currently set environment variables, use the command `env`. You can filter down to just the above using `env | egrep '(SPOTIFY|PLAYLIST)'`
 
 ### Set which genres to Reject
-You can add a custom "reject.txt" file in the `new_albums` folder.
+You can add a custom "reject.txt" file in one of these locations:
+* `new_albums` folder
+* `XDG_CONFIG_HOME/new_albums` for Linux, Mac, and other Unixes
+* `APPDATA/new_albums` for Windows.
 
 The script will reject any album on which the primary artist's first genre matches any of the genres in your reject list. For example, if you have `"dance pop"` in your reject list, then the script will reject Beyoncé's 'RENAISSANCE' album, because her first genre is dance pop. (Her genres are ['dance pop', 'pop', 'r&b']).
 
 ### Set which genres to Accept regardless of Genre rejects
-You can add a custom "accept.txt" file in the `new_albums` folder.
+You can add a custom "accept.txt" file in one of the following locations:
+* `new_albums` folder
+* `XDG_CONFIG_HOME/new_albums` for Unix
+* `APPDATA/new_albums` for Windows
 
 
 ### Create a Virtual Environment (optional)

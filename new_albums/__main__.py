@@ -1,19 +1,18 @@
-from new_albums.build_description import build_description
-from new_albums.api import get_spotify
-from new_albums.classes.albumClass import albumClass, format_album
-from new_albums.classes.userClass import userClass
-from rich import print
-from typing import Iterable
-# import new_albums
-import new_albums.config as config
 import os
 import importlib
 import pycountry
 import argparse
 import sys
-# import spotipy
 import logging
-
+import new_albums.config as config
+from rich import print
+from typing import Iterable
+from pathlib import Path
+from new_albums.build_description import build_description
+from new_albums.api import get_spotify
+from new_albums.classes.albumClass import albumClass, format_album
+from new_albums.classes.userClass import userClass
+from new_albums.accept_reject import check_accept_reject_exists
 
 
 def log(message):
@@ -83,7 +82,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--fiat",
         "-f",
-        help="File to use as fiat data instead of defaults.",
+        help="Path to directory containing accept.txt and/or reject.txt.",
     )
 
     parser.add_argument(
@@ -113,7 +112,10 @@ def parse_arguments() -> argparse.Namespace:
     # Parse and validate arguments
     args = parser.parse_args()
     init_logging(args.log)
-    init_fiat(args)
+    # init_fiat(args)
+    if args.fiat:
+        args.fiat = Path(args.fiat)
+        init_accept_reject(args)
 
     if args.limit > 50 or args.limit <= 0:
         logging.critical(f"[parse_arguments] Invalid limit: {args.limit}")
@@ -249,13 +251,39 @@ def init_fiat(args):
         importlib.reload(config)
 
 
+def init_accept_reject(args):
+    """Check if accept.txt and/or reject.txt is in the path specified by -f.
+
+    Parameters
+    ----------
+    args : argparse.Namespace.
+        Parsed arguments.
+
+    Returns
+    -------
+    None
+    """
+    logging.debug(
+        f"[init_accept_reject]: Using path `{args.fiat}` as a config directory."
+    )
+    if check_accept_reject_exists(args.fiat):
+        logging.info(
+            f"[init_accept_reject]: Using accept.txt and reject.txt from {args.fiat}."
+        )
+    else:
+        # Fail here or else the script defaults to the module or XDG_CONFIG_HOME paths.
+        raise ValueError(f"Failed to find accept.txt and/or reject.txt in {args.fiat}")
+
+
 def add_to_file(filepath, string):
+    # TODO: Reimplement using append
     with open(filepath, "r") as f:
         lines = f.readlines()
         lines.append(f"{string}\n")
         lines.sort()
     with open(filepath, "w") as f:
         f.writelines(lines)
+
 
 def main():
     # FOR RIVERS ONLY:
@@ -273,11 +301,13 @@ def main():
 
     # print(args)
 
+    # TODO: Use more robust method of finding configs.
     if args.reject_genre:
+        logging.info("[main] Adding genres to reject.txt")
         add_to_file(r".\new_albums\reject.txt", args.reject_genre)
     if args.accept_artist:
+        logging.info("[main] Adding artists to accept.txt")
         add_to_file(r".\new_albums\accept.txt", args.accept_artist)
-
 
     filter_by_genre = args.top_genres
 
@@ -297,7 +327,7 @@ def main():
     countries = parse_country(countries, spotify)
     logging.debug(f"[main] Countries after parse_country: {countries}")
 
-    album = albumClass(spotify, config.FIAT_FILE, args.limit)
+    album = albumClass(spotify, args.fiat, args.limit)
 
     # Get albums lists
     processed_albums = album.get_new_album_ids(
@@ -366,7 +396,7 @@ def main():
 
     print("Done!")
     print(
-        f"Feel free to change your always accepted artists and always rejected genres in {config.FIAT_FILE} and run again."
+        "Feel free to change your always accepted artists and always rejected genres in `accept.txt` and `reject.txt` and run again."
     )
 
     logging.info(f"Success! {description}")

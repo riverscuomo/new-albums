@@ -1,7 +1,9 @@
+"""Convenience classes and tools for Spotipy albums."""
+
 import logging
 import itertools
-from .playlistClass import playlistClass
-from new_albums.config import FIAT_FILE
+from classes.playlistClass import playlistClass
+# from new_albums.config import FIAT_FILE
 
 
 def format_album(album):
@@ -27,8 +29,8 @@ class albumClass:
     ----------
     spotify : spotipy.client.Spotify
         Authenicated Spotify client.
-    fiat_file : str
-        Fiat file module name. Defaults to `_default_fiat.py`.
+    fiat_path : Optional[pathlib.Path]
+        Path to directory containing accept.txt/reject.txt. Optional.
     limit : int
         Amount of new releases to pull.
 
@@ -36,18 +38,18 @@ class albumClass:
     ----------
     spotify : spotipy.client.Spotify
         Authenicated Spotify client.
-    fiat_file : str
-        Fiat file module name.
+    fiat_path : Optional[pathlib.Path]
+        Directory containing accept.txt/reject.txt.
     limit : int
         Amount of new releases to pull.
     reject_fields : list[str]
         Album keys that aren't important to the script.
     """
 
-    def __init__(self, spotify, fiat_file=FIAT_FILE, limit=20):
+    def __init__(self, spotify, fiat_path=None, limit=20):
         # Init elements #
         self.spotify = spotify
-        self.fiat_file = fiat_file
+        self.fiat_path = fiat_path
         self.limit = limit
         self.reject_fields = [
             "available_markets",
@@ -95,7 +97,7 @@ class albumClass:
                 x.pop(f, None)
 
         # Filters the list of albums using an instance of ( playlistClass ), first by user top genres, then by rejects list
-        playlist = playlistClass(new_albums, self.spotify, self.fiat_file)
+        playlist = playlistClass(new_albums, self.spotify, self.fiat_path)
 
         # If user choose to filter by his top genres then .... FILTER BY YOUR TOP GENRES ( function filter_by_your_top_genres in playlistClass)
         if filter_by_your_top_genres:

@@ -1,3 +1,4 @@
+print("new_albums.setup main...")
 from new_albums.build_description import build_description
 from new_albums.api import get_spotify
 from new_albums.classes.albumClass import albumClass, format_album

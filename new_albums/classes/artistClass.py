@@ -1,3 +1,4 @@
+"""Helper class for artist data."""
 class artistClass:
     """Encapsulate a Spotify artist.
 

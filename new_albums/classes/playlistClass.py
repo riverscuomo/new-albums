@@ -1,14 +1,14 @@
 from importlib import import_module
-from typing import List, Tuple
+from typing import List, Tuple, Optional
+from pathlib import Path
 import logging
 
 from rich import print
 
-from .artistClass import artistClass
-from .userClass import userClass
-from .toolsClass import toolsClass
-from new_albums.config import FIAT_FILE
-# from data.fiat import reject, accept
+from new_albums.accept_reject import accept_reject_path
+from new_albums.classes.artistClass import artistClass
+from new_albums.classes.userClass import userClass
+from new_albums.classes.toolsClass import toolsClass
 
 
 class playlistClass:
@@ -20,8 +20,9 @@ class playlistClass:
         Spotify playlist ID as a URI, URL, or base 64 number.
     spotify : spotipy.client.Spotify
         Authenicated Spotipy client.
-    fiat_file : str
-        Fiat file module name. Defaults to `_default_fiat`.
+    conf_dir : Optional[pathlib.Path]
+        Path to configuration directory containing "accept.txt" and/or "reject.txt".
+        Defaults to XDG_CONFIG_HOME for Unix or APPHOME for Windows.
 
     Attributes
     ----------
@@ -38,27 +39,34 @@ class playlistClass:
     rejected_by_my_top : list[dict[str, str | list[str]]]
         Albums rejected by the artist's genres being precluded by the fiat file.
     """
-    def __init__(self, playlistId, spotify, fiat_file=FIAT_FILE):
+
+    def __init__(self, playlistId, spotify, conf_dir=None):
         # Init elements #
         self.spotify = spotify
-
-        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file()
-
-
+        self.accept, self.reject = self.get_accepted_rejected_from_fiat_file(conf_dir)
         self.accepted = []
         self.rejected_by_genre = []
         self.rejected_by_my_top = []
 
-
-
-    def get_accepted_rejected_from_fiat_file(self, ) -> Tuple[List[str], List[str]]:
-        # Parse the accepted / rejected from a Python fiat file
-        # logging.debug(f"[playListClass]: Fiat file gut check: {fiat_file}")
+    def get_accepted_rejected_from_fiat_file(
+        self, conf_dir: Optional[Path]
+    ) -> Tuple[List[str], List[str]]:
+        # Parse the accepted / rejected from accept.txt / reject.txt
+        logging.info(f"[playListClass]: Config directory path => {conf_dir}")
         # accept = ["test accept"]
         # reject = ["test reject"]
-        
-        accept = get_list_from_file(r".\new_albums\accept.txt")
-        reject = get_list_from_file(r".\new_albums\reject.txt")
+
+        # Use conf_dir if present otherwise retrieve a default path.
+        conf_dir = conf_dir if conf_dir else accept_reject_path()
+        logging.info(f"[playListClass]: Config directory retrieved as => {conf_dir}")
+        if conf_dir:
+            logging.info(f"[playListClass]: Using config directory => {conf_dir}")
+            accept = get_list_from_file(conf_dir.joinpath("accept.txt"))
+            reject = get_list_from_file(conf_dir.joinpath("reject.txt"))
+            return accept, reject
+        else:
+            logging.warn("[playListClass]: Not using accept.txt / reject.txt")
+            return [], []
         # try:
         #     mod = import_module("."+fiat_file, package="new_albums")
         # except ModuleNotFoundError as e:
@@ -83,12 +91,8 @@ class playlistClass:
         #     logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
         #     raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
 
-        return accept, reject
-
     def filter_by_fiat(self, new_albums):
-        """
-        Remove any albums whose first artist's first genre is in reject
-        """
+        """Remove any albums whose first artist's first genre is in reject."""
         albums = []
         for album in new_albums:
 
@@ -102,7 +106,9 @@ class playlistClass:
                 any(element in self.reject for element in [artist.genres[0]])
                 and artist.name not in self.accept
             ):
-                logging.info(f"[playlistClass::filter_by_fiat] Rejected by fiat: {artist.name}")
+                logging.info(
+                    f"[playlistClass::filter_by_fiat] Rejected by fiat: {artist.name}"
+                )
                 self.rejected_by_genre.append(album)
 
             else:
@@ -114,9 +120,7 @@ class playlistClass:
         return toolsClass.unique(albums)
 
     def filter_by_your_top_genres(self, new_albums):
-        """
-        Remove any albums that is not in your top genres
-        """
+        """Remove any albums that is not in your top genres."""
         # Get current user top genres using an instance of userClass ( userClass.py )
         user = userClass(self.spotify)
         user.set_user_top_genres()
@@ -140,18 +144,19 @@ class playlistClass:
 
             if not in_my_top:
                 # If it's not in my top append to rejected_by_my_top
-                logging.info(f"[playlistClass::filter_by_your_top_genres] Rejected by top genres - {album}")
+                logging.info(
+                    f"[playlistClass::filter_by_your_top_genres] Rejected by top genres - {album}"
+                )
                 self.rejected_by_my_top.append(album)
 
         # Remove duplicates , function unique in toolsClass.py
         return toolsClass.unique(albums)
 
+
 def get_list_from_file(filename):
-    """
-    get a list of strings from a text file
-    """
+    """Get a list of strings from a text file."""
     try:
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             lines = f.readlines()
         return [line.strip() for line in lines]
     except FileNotFoundError as e:

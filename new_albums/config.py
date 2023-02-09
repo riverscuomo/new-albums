@@ -1,7 +1,6 @@
-import os
+"""Configuration using decouple."""
 from datetime import datetime
 from decouple import config as dconfig
-
 
 # Config settings from environment variables.
 # These are treated as secrets and therefore sourced from environment variables to follow best practices.
@@ -10,7 +9,8 @@ SPOTIFY_CLIENT_ID = dconfig("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = dconfig("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = dconfig("SPOTIFY_REDIRECT_URI", default="http://localhost:8080")
 SPOTIFY_USER = dconfig("SPOTIFY_USER")
-FIAT_FILE = dconfig("FIAT_FILE", default="_default_fiat")
+# FIAT_FILE is deprecated
+# FIAT_FILE = dconfig("FIAT_FILE", default="_default_fiat")
 
 
 # The rest are also config settings, but their literal values are commited to the codebase since they aren't secret.

@@ -7,7 +7,7 @@ import spotipy
 # from spotipy.util import prompt_for_user_token
 from spotipy.oauth2 import SpotifyOAuth
 
-from new_albums.config import (
+from .config import (
     SPOTIFY_USER,
     SPOTIFY_REDIRECT_URI,
     scope,

@@ -2,7 +2,7 @@
 
 import logging
 import itertools
-from classes.playlistClass import playlistClass
+from .playlistClass import playlistClass
 # from new_albums.config import FIAT_FILE
 
 

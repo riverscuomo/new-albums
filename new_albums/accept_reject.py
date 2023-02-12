@@ -5,11 +5,6 @@ import logging
 from typing import Optional
 from pathlib import Path
 
-# There's nothing special about `config` here. I simply needed a module from `new_albums`
-# to use with `inspect` to get a full path.
-import config
-
-
 def accept_reject_path() -> Optional[Path]:
     """Retrieve path containing accept.txt/reject.txt with a preference for XDG_HOME.
 
@@ -59,9 +54,8 @@ def module_path_check() -> Optional[Path]:
         "[accept_reject]: Checking the `new_albums` module path for accept.txt and/or reject.txt if they exist."
     )
 
-    # Finicky logic here. I'm using inspect to get the module path for `config`.
-    # Therefore, this breaks if `config` is ever removed or renamed.
-    module_path: Path = Path(inspect.getfile(config)).parent
+    # Get the path of the location this code is currently running from
+    module_path: Path = Path(inspect.getfile(lambda: 0)).parent
     logging.info(f"[accept_reject]: Module path => {module_path}")
 
     if check_accept_reject_exists(module_path):

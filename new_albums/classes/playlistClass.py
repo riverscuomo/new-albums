@@ -5,10 +5,10 @@ import logging
 
 from rich import print
 
-from new_albums.accept_reject import accept_reject_path
-from new_albums.classes.artistClass import artistClass
-from new_albums.classes.userClass import userClass
-from new_albums.classes.toolsClass import toolsClass
+from ..accept_reject import accept_reject_path
+from .artistClass import artistClass
+from .userClass import userClass
+from .toolsClass import toolsClass
 
 
 class playlistClass:

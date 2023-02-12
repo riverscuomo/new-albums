@@ -5,7 +5,7 @@ import logging
 
 from rich import print
 
-from ..accept_reject import accept_reject_path
+from new_albums.scripts.accept_reject import accept_reject_path
 from .artistClass import artistClass
 from .userClass import userClass
 from .toolsClass import toolsClass

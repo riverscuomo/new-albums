@@ -4,15 +4,17 @@ import pycountry
 import argparse
 import sys
 import logging
-from .config import *
+
 from rich import print
 from typing import Iterable
 from pathlib import Path
-from .build_description import build_description
-from .api import get_spotify
-from .classes.albumClass import albumClass, format_album
-from .classes.userClass import userClass
-from .accept_reject import check_accept_reject_exists
+import new_albums.scripts.config as config
+from new_albums.scripts.build_description import build_description
+from new_albums.scripts.api import get_spotify
+from new_albums.scripts.accept_reject import check_accept_reject_exists
+from new_albums.classes.albumClass import albumClass, format_album
+from new_albums.classes.userClass import userClass
+
 
 
 def log(message):

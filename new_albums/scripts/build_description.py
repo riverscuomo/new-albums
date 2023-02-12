@@ -1,6 +1,6 @@
 from typing import List
 
-from .classes.albumClass import albumClass
+from new_albums.classes.albumClass import albumClass
 
 
 def build_description(

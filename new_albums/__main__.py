@@ -401,7 +401,11 @@ def main():
         "Feel free to change your always accepted artists and always rejected genres in `accept.txt` and `reject.txt` and run again."
     )
 
-    logging.info(f"Success! {description}")
+    result = f"Success! {description}"
+
+    # logging.info(result)
+
+    return result
 
 
 if __name__ == "__main__":

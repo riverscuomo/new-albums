@@ -303,13 +303,13 @@ def main():
 
     # print(args)
 
-    # TODO: Use more robust method of finding configs.
+    # TODO: 
     if args.reject_genre:
         logging.info("[main] Adding genres to reject.txt")
-        add_to_file(r".\new_albums\reject.txt", args.reject_genre)
+        add_to_file(r".\new_albums\scripts\reject.txt", args.reject_genre)
     if args.accept_artist:
         logging.info("[main] Adding artists to accept.txt")
-        add_to_file(r".\new_albums\accept.txt", args.accept_artist)
+        add_to_file(r".\new_albums\scripts\accept.txt", args.accept_artist)
 
     filter_by_genre = args.top_genres
 

@@ -14,5 +14,5 @@ class toolsClass :
             # Csheck if exists in unique_list or not
             if x not in unique_list_of_elements:
                 unique_list_of_elements.append(x)
-        return list_of_elements
+        return unique_list_of_elements
 

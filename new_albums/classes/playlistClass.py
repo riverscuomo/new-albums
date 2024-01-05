@@ -97,17 +97,25 @@ class playlistClass:
         for album in new_albums:
 
             # Get all artist info and set into variable artist, an instance of artistClass ( artistClass.py )
-            artist = artistClass(album["artists"][0]["id"], self.spotify)
-            album["genres"] = artist.genres
+            first_artist = artistClass(album["artists"][0]["id"], self.spotify)
+            genres = first_artist.genres
+
+            album["genres"] = genres
+
+            if genres == []:
+                # If the artist has no genres, accept the album.
+                self.accepted.append(album)
+                continue
 
             # If the artist's first genre is in the reject list, reject the album.
             # (This is a little less strict because I was missing some albums I'd like to hear.)
-            if artist.genres and (
-                any(element in self.reject for element in [artist.genres[0]])
-                and artist.name not in self.accept
-            ):
+            #
+            # edit: reverting to the strict method as I'm hearing too many albums I don't want to hear.
+            # edit: here's a compromise: if the artist's first genre contains any of the reject list, reject the album.
+            first_genre = genres[0]
+            if any(reject in first_genre for reject in self.reject):
                 logging.info(
-                    f"[playlistClass::filter_by_fiat] Rejected by fiat: {artist.name}"
+                    f"[playlistClass::filter_by_fiat] Rejected by fiat: {first_artist.name}"
                 )
                 self.rejected_by_genre.append(album)
 

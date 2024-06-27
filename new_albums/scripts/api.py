@@ -19,6 +19,7 @@ from .config import (
 
 def get_spotify(timeout=20) -> spotipy.Spotify:
     logging.info("[get_spotify] Creating Spotify client")
+    print(SPOTIFY_REDIRECT_URI)
 
     # This code currently uses the deprecated username parameter.
     token = SpotifyOAuth(

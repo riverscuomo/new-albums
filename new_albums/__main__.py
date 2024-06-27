@@ -14,6 +14,7 @@ from new_albums.scripts.api import get_spotify
 from new_albums.scripts.accept_reject import check_accept_reject_exists
 from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
+import rivertils.services
 
 
 
@@ -219,9 +220,11 @@ def init_logging(log_level):
 
     # Set requested level as well as a nicer default format.
     logging.basicConfig(
-        force=True,
+        force=True, # True to override maintenance log and log to the local file?
         format="(%(asctime)s (%(levelname)s)) => %(message)s",
         level=numeric_level,
+        filename="new_albums.log",
+        # filemode='a'  # Use 'a' to append to the existing file instead of overwriting.
     )
 
     logging.debug("[init_logging] Logger initialized.")
@@ -288,15 +291,16 @@ def add_to_file(filepath, string):
 
 
 def main():
+
     # FOR RIVERS ONLY:
     # Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.
     # Even though you have an argparser by a different name, they're both
     # accessing the same sys.argv.
-    logging.debug(sys.argv)
+    # logging.debug(sys.argv)
     if sys.argv[0] == "maintenance.py":
         sys.argv = ["new_albums.py"]
 
-    logging.debug(sys.argv)
+    # logging.debug(sys.argv)
 
     # Setup and parse arguments
     args = parse_arguments()
@@ -313,10 +317,9 @@ def main():
 
     filter_by_genre = args.top_genres
 
-    logging.info("[main] Creating Spotipy instance.")
-
     try:
         spotify = get_spotify(timeout=args.timeout)
+        # spotify = rivertils.services.get_spotify_client()
     except Exception as e:
         log("Could not get spotify auth. Exiting")
         logging.critical(f"Spotipy error:\n{e}")

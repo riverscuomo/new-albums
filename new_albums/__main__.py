@@ -4,7 +4,6 @@ import pycountry
 import argparse
 import sys
 import logging
-
 from rich import print
 from typing import Iterable
 from pathlib import Path
@@ -14,8 +13,6 @@ from new_albums.scripts.api import get_spotify
 from new_albums.scripts.accept_reject import check_accept_reject_exists
 from new_albums.classes.albumClass import albumClass, format_album
 from new_albums.classes.userClass import userClass
-import rivertils.services
-
 
 
 def log(message):

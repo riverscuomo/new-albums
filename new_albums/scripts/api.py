@@ -1,10 +1,5 @@
-import os
 import logging
-from contextlib import suppress
-from json.decoder import JSONDecodeError
 import spotipy
-
-# from spotipy.util import prompt_for_user_token
 from spotipy.oauth2 import SpotifyOAuth
 
 from .config import (
@@ -13,7 +8,6 @@ from .config import (
     scope,
     SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET,
-    spotify_scope_warning,
 )
 
 

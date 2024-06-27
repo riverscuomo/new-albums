@@ -90,7 +90,7 @@ def parse_arguments() -> argparse.Namespace:
         "-l",
         help="Set logging granularity. Defaults to 'warning'.",
         choices=["debug", "info", "warning", "error", "critical"],
-        default="warning",
+        default="debug",
     )
 
     parser.add_argument(
@@ -302,9 +302,6 @@ def main():
     # Setup and parse arguments
     args = parse_arguments()
 
-    # print(args)
-
-    # TODO: 
     if args.reject_genre:
         logging.info("[main] Adding genres to reject.txt")
         add_to_file(r".\new_albums\scripts\reject.txt", args.reject_genre)
@@ -367,22 +364,24 @@ def main():
         for album in processed_albums.rejected_by_my_top:
             print(f"+ {format_album(album)}")
 
-    log("REJECTED BY GENRE FIAT")
+    log(f"REJECTED BY GENRE FIAT ({config.REJECTION_CRITERIA})")
     for album in processed_albums.rejected_by_genre:
-        print(f"+ {format_album(album)}")
+        print(f"- {format_album(album)}")
 
     # Sending to spotify
     log(f"updating spotify playlist for {config.SPOTIFY_USER}...")
 
+    """
+    WARNING: The desktop app may not update in real time. You may have better luck testing with the web player.
+    """
+
     # empty playlist first
-    result = spotify.user_playlist_replace_tracks(
-        config.SPOTIFY_USER, config.PLAYLIST_ID, []
-    )
+    result = spotify.playlist_replace_items(config.PLAYLIST_ID, [])
 
     # add all of the sublists of track_id_lists
     result = [
-        spotify.user_playlist_add_tracks(
-            config.SPOTIFY_USER, config.PLAYLIST_ID, sublist
+        spotify.playlist_add_items(    
+            config.PLAYLIST_ID, sublist
         )
         for sublist in track_id_lists
     ]
@@ -396,9 +395,8 @@ def main():
         config.SPOTIFY_USER, config.PLAYLIST_ID, description=description
     )
 
-    print("Done!")
     print(
-        "Feel free to change your always accepted artists and always rejected genres in `accept.txt` and `reject.txt` and run again."
+        "Feel free to change your always accepted artists and always rejected genres on the command line with the -a and -r flags."
     )
 
     result = f"Success! {description}"

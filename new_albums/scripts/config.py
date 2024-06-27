@@ -27,3 +27,4 @@ local_offset_str = datetime.strftime(now_local, "%z")
 local_offset_int = float(
     local_offset_str[:3] + (".5" if local_offset_str[3] == "3" else ".0")
 )
+REJECTION_CRITERIA = "if the primary artist's first or second genre contains any substring in the reject list"

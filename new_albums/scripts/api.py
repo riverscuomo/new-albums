@@ -11,9 +11,21 @@ from .config import (
 )
 
 
-def get_spotify(timeout=20) -> spotipy.Spotify:
+def get_spotify(timeout: int = 20) -> spotipy.Spotify:
+    """
+    Creates a Spotify client using the provided timeout value.
+
+    Args:
+        timeout (int): The timeout value for requests in seconds.
+
+    Returns:
+        spotipy.Spotify: A Spotify client instance.
+
+    Raises:
+        None
+    """
+
     logging.info("[get_spotify] Creating Spotify client")
-    print(SPOTIFY_REDIRECT_URI)
 
     # This code currently uses the deprecated username parameter.
     token = SpotifyOAuth(

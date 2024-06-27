@@ -91,6 +91,7 @@ class playlistClass:
         #     logging.debug(f"[playListClass]:\naccept: {mod.accept}\nreject: {mod.reject}")
         #     raise TypeError("Your fiat file's `accept` and `reject` lists should ONLY consist of strings.")
 
+
     def filter_by_fiat(self, new_albums):
         """Remove any albums whose first artist's first genre is in reject."""
         albums = []
@@ -98,11 +99,11 @@ class playlistClass:
 
             # Get all artist info and set into variable artist, an instance of artistClass ( artistClass.py )
             first_artist = artistClass(album["artists"][0]["id"], self.spotify)
-            genres = first_artist.genres
+            album_genres = first_artist.genres
 
-            album["genres"] = genres
+            album["genres"] = album_genres
 
-            if genres == []:
+            if album_genres == []:
                 # If the artist has no genres, accept the album.
                 self.accepted.append(album)
                 continue
@@ -112,8 +113,12 @@ class playlistClass:
             #
             # edit: reverting to the strict method as I'm hearing too many albums I don't want to hear.
             # edit: here's a compromise: if the artist's first genre contains any of the reject list, reject the album.
-            first_genre = genres[0]
-            if any(reject in first_genre for reject in self.reject):
+            # edit: if the artist's first or second genre contains any of the reject list, reject the album.
+            #
+            # If you change the rejection criteria, update the rejection_criteria string in Config.
+            primary_genre = album_genres[0] if album_genres else ""
+            secondary_genre = album_genres[1] if len(album_genres) > 1 else ""
+            if any(reject in primary_genre for reject in self.reject) or any(reject in secondary_genre for reject in self.reject):
                 logging.info(
                     f"[playlistClass::filter_by_fiat] Rejected by fiat: {first_artist.name}"
                 )

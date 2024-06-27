@@ -69,22 +69,17 @@ class albumClass:
         """
 
         logging.debug(f"[get_new_album_ids]: countries = {countries}")
+
         # Clean up countries by ensuring they're uppercased
         # countries = (country.upper() for country in countries) if countries else ["US"]
 
-        # Pull new albums and filter on each country
-        new = (
-            self.spotify.new_releases(limit=self.limit, country=country)["albums"][
-                "items"
-            ]
-            for country in countries
-        )
-
-        # Flatten new because it's currently a list of lists
-        new = itertools.chain.from_iterable(new)
-
-        # Consume the generators and sort by release date
-        new = sorted(new, key=lambda x: x["release_date"], reverse=True)
+        print("!! The new_releases endpoint stopped working in April, 2024. Computing new album releases from Spotify's New Music Friday playlist instead !!")
+        
+        # WORKAROUND: get all the tracks from spotify's 'New Music Friday' playlist
+        new = self.get_new_albums_from_nmf()
+        
+        # # Pull new albums and filter on each country
+        # new = self.get_new_albums_from_api(countries)
 
         logging.debug(f"[get_new_albums_ids]: new = {new}")
 
@@ -109,6 +104,31 @@ class albumClass:
 
         return playlist
 
+    def get_new_albums_from_api(self, countries):
+        """
+        Endpoint stopped working in April, 2024. This function is no longer used.
+        """
+        new = (
+            self.spotify.new_releases(limit=self.limit, country=country)["albums"][
+                "items"
+            ]
+            for country in countries
+        )
+
+        # Flatten new because it's currently a list of lists
+        new = itertools.chain.from_iterable(new)
+
+        # Consume the generators and sort by release date
+        new = sorted(new, key=lambda x: x["release_date"], reverse=True)
+        return new
+
+
+    def get_new_albums_from_nmf(self):
+        nmf_items = self.spotify.playlist_tracks("37i9dQZF1DX4JAvHpjipBk")["items"]
+
+        new = [item["track"]["album"] for item in nmf_items]
+        return new
+
     def get_track_ids_for_album(self, album_id):
         """
         Get the track ids for a single album.
@@ -118,5 +138,5 @@ class albumClass:
         )
         album = self.spotify.album(album_id)
 
-        # print(track_ids)
+        logging.debug(album)
         return [x["id"] for x in album["tracks"]["items"]]

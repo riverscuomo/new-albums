@@ -345,7 +345,7 @@ def main():
     for i in range(0, len(track_ids), 100):
         track_id_lists.append(track_ids[i : i + 100])
 
-    # Results display screen
+    """ Print results to the console."""
 
     if filter_by_genre:
         log("MY TOP GENRE LIST")
@@ -391,9 +391,14 @@ def main():
         processed_albums.rejected_by_genre + processed_albums.rejected_by_my_top,
     )
 
-    spotify.user_playlist_change_details(
-        config.SPOTIFY_USER, config.PLAYLIST_ID, description=description
-    )
+    playlist_id = config.PLAYLIST_ID
+
+    try:
+        spotify.playlist_change_details(
+            playlist_id, description=description
+        )
+    except Exception as e:
+        print(f"[main] Could not update playlist description: {e}")
 
     print(
         "Feel free to change your always accepted artists and always rejected genres on the command line with the -a and -r flags."

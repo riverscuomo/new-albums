@@ -16,7 +16,15 @@ def build_description(
         items = items = collect_items(rejected_albums)
         description += " REJECTED: " + ", ".join(items)
 
-    return description
+    MAX_DESCRIPTION_LENGTH = 297  # 300 - 3 for the ellipsis
+    truncated_description = (
+        f"{description[:MAX_DESCRIPTION_LENGTH]}..."
+        if len(description) > MAX_DESCRIPTION_LENGTH
+        else description
+    )
+
+
+    return truncated_description
 
 
 def collect_items(albums: List[albumClass]) -> List[str]:

@@ -93,21 +93,30 @@ class playlistClass:
 
 
     def filter_by_fiat(self, new_albums):
-        """Remove any albums whose first artist's first genre is in reject."""
+        """Remove any albums whose first genres meet rejection_criteria."""
         albums = []
         for album in new_albums:
 
             # Get all artist info and set into variable artist, an instance of artistClass ( artistClass.py )
             first_artist = artistClass(album["artists"][0]["id"], self.spotify)
             album_genres = first_artist.genres
+            artist_name = first_artist.name
 
             album["genres"] = album_genres
-
+            
+            # If the artist has no genres, reject the album.
             if album_genres == []:
-                # If the artist has no genres, accept the album.
-                self.accepted.append(album)
+                self.rejected_by_genre.append(album)                
                 continue
 
+            elif any(artist_name in accept for accept in self.accept):
+                # If the artist's name is in the accept list, accept the album.
+                self.accepted.append(album)
+                continue
+            
+            primary_genre = album_genres[0] if album_genres else ""
+            secondary_genre = album_genres[1] if len(album_genres) > 1 else ""
+            
             # If the artist's first genre is in the reject list, reject the album.
             # (This is a little less strict because I was missing some albums I'd like to hear.)
             #
@@ -116,18 +125,15 @@ class playlistClass:
             # edit: if the artist's first or second genre contains any of the reject list, reject the album.
             #
             # If you change the rejection criteria, update the rejection_criteria string in Config.
-            primary_genre = album_genres[0] if album_genres else ""
-            secondary_genre = album_genres[1] if len(album_genres) > 1 else ""
             if any(reject in primary_genre for reject in self.reject) or any(reject in secondary_genre for reject in self.reject):
                 logging.info(
-                    f"[playlistClass::filter_by_fiat] Rejected by fiat: {first_artist.name}"
+                    f"[playlistClass::filter_by_fiat] Rejected by fiat: {artist_name}"
                 )
                 self.rejected_by_genre.append(album)
 
             else:
                 # Albums that are not rejected
                 self.accepted.append(album)
-            continue
 
         # Remove duplicates , function unique in toolsClass.py
         return toolsClass.unique(albums)

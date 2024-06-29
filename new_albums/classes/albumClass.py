@@ -42,7 +42,7 @@ class albumClass:
         Directory containing accept.txt/reject.txt.
     limit : int
         Amount of new releases to pull.
-    reject_fields : list[str]
+    unnecessary_fields : list[str]
         Album keys that aren't important to the script.
     """
 
@@ -51,7 +51,7 @@ class albumClass:
         self.spotify = spotify
         self.fiat_path = fiat_path
         self.limit = limit
-        self.reject_fields = [
+        self.unnecessary_fields = [
             "available_markets",
             "external_urls",
             "href",
@@ -88,7 +88,7 @@ class albumClass:
 
         # Remove any fields that we don't need for the rest of the script
         for x in new_albums:
-            for f in self.reject_fields:
+            for f in self.unnecessary_fields:
                 x.pop(f, None)
 
         # Filters the list of albums using an instance of ( playlistClass ), first by user top genres, then by rejects list

@@ -76,15 +76,12 @@ class albumClass:
         print("!! The new_releases endpoint stopped working in April, 2024. Computing new album releases from Spotify's New Music Friday playlist instead !!")
         
         # WORKAROUND: get all the tracks from spotify's 'New Music Friday' playlist
-        new = self.get_new_albums_from_nmf()
+        new_albums = self.get_new_albums_from_nmf()
         
         # # Pull new albums and filter on each country
         # new = self.get_new_albums_from_api(countries)
 
-        logging.debug(f"[get_new_albums_ids]: new = {new}")
-
-        # Remove any albums that are single-only
-        new_albums = [x for x in new if x["album_type"] == "album"]
+        logging.debug(f"[get_new_albums_ids]: new = {new_albums}")        
 
         # Remove any fields that we don't need for the rest of the script
         for x in new_albums:
@@ -126,8 +123,13 @@ class albumClass:
     def get_new_albums_from_nmf(self):
         nmf_items = self.spotify.playlist_tracks("37i9dQZF1DX4JAvHpjipBk")["items"]
 
-        new = [item["track"]["album"] for item in nmf_items]
-        return new
+        new_items = [item["track"]["album"] for item in nmf_items]
+        # Remove any albums that are single-only
+        new_albums = [x for x in new_items if x["album_type"] == "album"]
+        
+        # Remove any dictionaries that are duplicates
+        unique = list({v['id']:v for v in new_albums}.values())
+        return unique
 
     def get_track_ids_for_album(self, album_id):
         """

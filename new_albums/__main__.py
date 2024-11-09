@@ -287,7 +287,9 @@ def add_to_file(filepath, string):
         f.writelines(lines)
 
 
-def main():
+def main(subscript_args):
+    # Use subscript_args as needed
+    print(f"new_albums main() received arguments: {subscript_args}")
 
     # FOR RIVERS ONLY:
     # Handle the case when this script is called from a manual run of maintanence.py with an argument of 'new_albums'.

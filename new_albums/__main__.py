@@ -388,7 +388,8 @@ def main(subscript_args):
         for sublist in track_id_lists
     ]
 
-    description = build_description(
+    # In main()
+    spotify_description, full_description = build_description(
         processed_albums.accepted,
         processed_albums.rejected_by_genre + processed_albums.rejected_by_my_top,
     )
@@ -397,7 +398,7 @@ def main(subscript_args):
 
     try:
         spotify.playlist_change_details(
-            playlist_id, description=description
+            playlist_id, description=spotify_description
         )
     except Exception as e:
         print(f"[main] Could not update playlist description: {e}")
@@ -406,13 +407,34 @@ def main(subscript_args):
         "Feel free to change your always accepted artists and always rejected genres on the command line with the -a and -r flags."
     )
 
-    result = f"Success! {description}"
+    # Return the full description for the maintenance spreadsheet
+    result = f"Success! {full_description}"
+
+    # description = build_description(
+    #     processed_albums.accepted,
+    #     processed_albums.rejected_by_genre + processed_albums.rejected_by_my_top,
+    # )
+
+    # playlist_id = config.PLAYLIST_ID
+
+    # try:
+    #     spotify.playlist_change_details(
+    #         playlist_id, description=description
+    #     )
+    # except Exception as e:
+    #     print(f"[main] Could not update playlist description: {e}")
+
+    # print(
+    #     "Feel free to change your always accepted artists and always rejected genres on the command line with the -a and -r flags."
+    # )
+
+    # result = f"Success! {description}"
 
     # logging.info(result)
 
+    
+
     return result
-
-
 if __name__ == "__main__":
 
     main()
